@@ -1958,6 +1958,7 @@ function initPrintFit() {
     wrapper.style.width = origWrapperWidth;
     wrapper.style.height = origWrapperHeight;
     wrapper.style.overflow = origWrapperOverflow;
+    wrapper.removeAttribute("data-print-fit");
   });
 }
 
