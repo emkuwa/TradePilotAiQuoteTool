@@ -1924,10 +1924,10 @@ function initPrintFit() {
   window.addEventListener("beforeprint", function () {
     if (!el || !wrapper) return;
     var m = 12;
-    var a4W = 210 - 2 * m;
-    var a4H = 297 - 2 * m;
-    var a4Wpx = (a4W / 25.4) * 96;
-    var a4Hpx = (a4H / 25.4) * 96;
+    var a4Wmm = 210 - 2 * m;
+    var a4Hmm = 297 - 2 * m;
+    var a4Wpx = (a4Wmm / 25.4) * 96;
+    var a4Hpx = (a4Hmm / 25.4) * 96;
     var w = el.scrollWidth || el.offsetWidth;
     var h = el.scrollHeight || el.offsetHeight;
     if (w <= 0 || h <= 0) return;
@@ -1945,6 +1945,7 @@ function initPrintFit() {
     wrapper.style.width = Math.ceil(w * scale) + "px";
     wrapper.style.height = Math.ceil(h * scale) + "px";
     wrapper.style.overflow = "hidden";
+    wrapper.setAttribute("data-print-fit", "1");
   });
 
   window.addEventListener("afterprint", function () {
