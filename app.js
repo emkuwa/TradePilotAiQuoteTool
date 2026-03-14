@@ -2073,17 +2073,21 @@ function generatePdf(mode, filenameBase) {
     .slice(0, 24)}.pdf`;
 
   const A4_WIDTH_PX = 595;
-  const clone = element.cloneNode(true);
-  clone.id = "document-preview-pdf-clone";
-  clone.style.width = A4_WIDTH_PX + "px";
-  clone.style.maxWidth = A4_WIDTH_PX + "px";
-  clone.style.boxShadow = "none";
-  clone.style.background = "#fff";
-  const container = document.createElement("div");
-  container.id = "pdf-capture-container";
-  container.style.cssText = "position:fixed;left:-9999px;top:0;width:" + A4_WIDTH_PX + "px;background:#fff;z-index:-1;";
-  container.appendChild(clone);
-  document.body.appendChild(container);
+  const origWidth = element.style.width || "";
+  const origMaxWidth = element.style.maxWidth || "";
+  const origBoxShadow = element.style.boxShadow || "";
+  const origOverflow = element.style.overflow || "";
+
+  const overlay = document.createElement("div");
+  overlay.id = "pdf-gen-overlay";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;z-index:99999;font-size:1rem;color:#333;";
+  overlay.textContent = "Generating PDF…";
+  document.body.appendChild(overlay);
+
+  element.style.width = A4_WIDTH_PX + "px";
+  element.style.maxWidth = A4_WIDTH_PX + "px";
+  element.style.boxShadow = "none";
+  element.style.overflow = "visible";
 
   const opt = {
     margin: 10,
@@ -2102,57 +2106,43 @@ function generatePdf(mode, filenameBase) {
     pagebreak: { mode: ["avoid-all"] },
   };
 
-  function cleanup() {
-    if (container && container.parentNode) container.remove();
+  function restore() {
+    element.style.width = origWidth;
+    element.style.maxWidth = origMaxWidth;
+    element.style.boxShadow = origBoxShadow;
+    element.style.overflow = origOverflow;
+    if (overlay && overlay.parentNode) overlay.remove();
   }
 
-  function runPdf(fromEl) {
+  function runPdf() {
     if (mode === "blob") {
       return html2pdf()
         .set(opt)
-        .from(fromEl)
+        .from(element)
         .outputPdf("blob")
         .then(function (blob) {
-          cleanup();
+          restore();
           return blob;
         })
         .catch(function (err) {
-          cleanup();
+          restore();
           throw err;
         });
     }
     if (mode === "download" || mode === "save") {
       return html2pdf()
         .set(opt)
-        .from(fromEl)
+        .from(element)
         .save()
-        .then(cleanup)
+        .then(restore)
         .catch(function (err) {
-          cleanup();
+          restore();
           throw err;
         });
     }
   }
 
-  const imgs = clone.querySelectorAll("img");
-  const loadPromises = Array.from(imgs).map(
-    (img) =>
-      new Promise(function (resolve) {
-        if (img.complete) resolve();
-        else img.onload = resolve;
-        img.onerror = resolve;
-        setTimeout(resolve, 1500);
-      })
-  );
-
-  return Promise.all(loadPromises)
-    .then(function () {
-      return runPdf(clone);
-    })
-    .catch(function (err) {
-      cleanup();
-      throw err;
-    });
+  return runPdf();
 }
 
 function initLangToggle() {
