@@ -1174,6 +1174,12 @@ td select {
     background: white;
   }
 
+  .document-from-label,
+  .panel-header-with-meta,
+  .preview-hint {
+    display: none !important;
+  }
+
   .app-shell > .top-nav,
   .sidebar,
   .panel:not(:last-child),
@@ -1196,11 +1202,13 @@ td select {
 
   #document-preview-wrapper {
     overflow: visible;
+    max-width: none;
   }
 
   .document-a4 {
     box-shadow: none;
     border-radius: 0;
+    max-width: none;
   }
 }
 

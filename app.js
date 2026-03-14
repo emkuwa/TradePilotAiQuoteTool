@@ -525,7 +525,32 @@ function checkInviteLink(readyCallback) {
   if (shortPayload && typeof LZString !== "undefined" && LZString.decompressFromEncodedURIComponent) {
     try {
       const jsonStr = LZString.decompressFromEncodedURIComponent(shortPayload);
-      if (jsonStr) data = JSON.parse(jsonStr);
+      if (jsonStr) {
+        const raw = JSON.parse(jsonStr);
+        if (raw.cp && raw.pw != null) {
+          data = {
+            companyProfile: {
+              name: raw.cp.n || "My Business",
+              address: raw.cp.a || "",
+              phone: raw.cp.p || "",
+              email: raw.cp.e || "",
+              bankDetails: raw.cp.b || "",
+              currency: raw.cp.c || "TZS",
+              dealers: raw.cp.d || "",
+              sector: raw.cp.s || "generic",
+              website: raw.cp.w || "",
+              socials: raw.cp.so || "",
+              logoDataUrl: null,
+              logoUrl: raw.cp.lU || undefined,
+              extraFields: raw.cp.x || [],
+            },
+            password: raw.pw,
+            inviteeName: raw.inv || raw.cp.n,
+          };
+        } else {
+          data = raw;
+        }
+      }
     } catch (e) { /* ignore */ }
   }
   if (!data && legacyPayload) {
@@ -577,6 +602,7 @@ function checkInviteLink(readyCallback) {
       saveJSON(getScopedKey(STORAGE_KEYS.COMPANY), { ...DEFAULT_COMPANY, ...data.companyProfile });
       overlay.remove();
       window.history.replaceState({}, "", window.location.pathname + (window.location.hash || ""));
+      showAppLinkAndInstallHint();
       if (typeof readyCallback === "function") readyCallback();
     });
     return true;
@@ -612,6 +638,30 @@ function showInvalidInviteOverlay(readyCallback) {
   });
 }
 
+function showAppLinkAndInstallHint() {
+  const baseUrl = (typeof INVITE_BASE_URL !== "undefined" && INVITE_BASE_URL) ? INVITE_BASE_URL : (window.location.origin + window.location.pathname).replace(/\/$/, "");
+  const isSw = currentLang() === "sw";
+  const msg = isSw
+    ? `Kufungua mfumo tena, tumia kiungo hiki (weka kwenye bookmark au andika):\n\n${baseUrl}\n\nUnaweza pia "Install" / Sakinisha programu kutoka kwenye menu ya browser (⋮) ili kupata shortcut kwenye computer yako.`
+    : `To open the app again, use this link (bookmark it or save it):\n\n${baseUrl}\n\nYou can also install the app from the browser menu (⋮ or ⋯) for a shortcut on your computer.`;
+  const box = document.createElement("div");
+  box.className = "app-link-hint-box";
+  box.innerHTML = `
+    <div class="app-link-hint-content">
+      <h3>${isSw ? "Karibu! Kiungo cha kufungua mfumo" : "Welcome! Your app link"}</h3>
+      <p class="app-link-url"><a href="${baseUrl}" target="_blank" rel="noopener">${baseUrl}</a></p>
+      <p class="app-link-note">${isSw ? "Weka kwenye bookmark au sakinisha programu kutoka menu ya browser (⋮) kwa shortcut." : "Bookmark this or install from browser menu (⋮) for a desktop shortcut."}</p>
+      <button type="button" class="btn primary" id="app-link-hint-ok">${isSw ? "Sawa" : "Got it"}</button>
+    </div>
+  `;
+  box.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);padding:1rem;";
+  document.body.appendChild(box);
+  const content = box.querySelector(".app-link-hint-content");
+  if (content) content.style.cssText = "background:#fff;border-radius:12px;padding:1.5rem;max-width:420px;box-shadow:0 20px 50px rgba(0,0,0,0.2);";
+  const linkEl = box.querySelector(".app-link-url a");
+  if (linkEl) linkEl.style.cssText = "word-break:break-all;color:#0ea5e9;";
+  box.querySelector("#app-link-hint-ok").addEventListener("click", () => { box.remove(); });
+}
 
 function initAuth(readyCallback) {
   setCurrentUserId(null); // every new open asks for password
@@ -850,18 +900,35 @@ function initAdminPanel() {
       logoUrl: adminInviteLogoUrl || undefined,
       extraFields: [],
     };
-    const payload = { companyProfile, password: inviteePassword, inviteeName: inviteeName || companyProfile.name };
     const base = (typeof INVITE_BASE_URL !== "undefined" && INVITE_BASE_URL)
       ? INVITE_BASE_URL.replace(/\/$/, "")
       : (window.location.origin + window.location.pathname).replace(/\/$/, "");
-    const jsonStr = JSON.stringify(payload);
     let inviteParam;
     let inviteUrl;
     if (typeof LZString !== "undefined" && LZString.compressToEncodedURIComponent) {
-      inviteParam = LZString.compressToEncodedURIComponent(jsonStr);
+      const shortPayload = {
+        cp: {
+          n: companyProfile.name,
+          a: companyProfile.address,
+          p: companyProfile.phone,
+          e: companyProfile.email,
+          b: companyProfile.bankDetails,
+          c: companyProfile.currency,
+          d: companyProfile.dealers,
+          s: companyProfile.sector || "generic",
+          w: companyProfile.website || "",
+          so: companyProfile.socials || "",
+          lU: companyProfile.logoUrl || null,
+          x: companyProfile.extraFields || [],
+        },
+        pw: inviteePassword,
+        inv: inviteeName || companyProfile.name,
+      };
+      inviteParam = LZString.compressToEncodedURIComponent(JSON.stringify(shortPayload));
       inviteUrl = `${base}/?i=${inviteParam}`;
     } else {
-      inviteParam = encodeURIComponent(base64EncodeUtf8(jsonStr));
+      const payload = { companyProfile, password: inviteePassword, inviteeName: inviteeName || companyProfile.name };
+      inviteParam = encodeURIComponent(base64EncodeUtf8(JSON.stringify(payload)));
       inviteUrl = `${base}/?invite=${inviteParam}`;
     }
     urlInput.value = inviteUrl;
@@ -1839,15 +1906,25 @@ function initActions() {
   const emailBtn = document.getElementById("send-email");
   const shareToolBtn = document.getElementById("share-tool");
 
-  printBtn.addEventListener("click", () => {
-    window.print();
-  });
+  if (printBtn) {
+    printBtn.addEventListener("click", () => {
+      window.print();
+    });
+  }
 
-  downloadBtn.addEventListener("click", () => {
-    generatePdf("download");
-  });
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", async () => {
+      try {
+        await generatePdf("download");
+      } catch (e) {
+        console.error("PDF download failed:", e);
+        alert("Could not generate PDF. Try again or use Print.");
+      }
+    });
+  }
 
-  saveBtn.addEventListener("click", async () => {
+  if (saveBtn) {
+    saveBtn.addEventListener("click", async () => {
     const meta = window._tpaiGetDocMeta?.() || {};
     const defaultName = meta.number || "document";
     const filename = prompt(
@@ -1880,8 +1957,10 @@ function initActions() {
     renderHistory();
     alert("Document saved and recorded in local history.");
   });
+  }
 
-  shareBtn.addEventListener("click", async () => {
+  if (shareBtn) {
+    shareBtn.addEventListener("click", async () => {
     try {
       const blob = await generatePdf("blob");
       const meta = window._tpaiGetDocMeta?.() || {};
@@ -1916,8 +1995,10 @@ function initActions() {
       );
     }
   });
+  }
 
-  emailBtn.addEventListener("click", () => {
+  if (emailBtn) {
+    emailBtn.addEventListener("click", () => {
     const meta = window._tpaiGetDocMeta?.() || {};
     const company = getCurrentCompany();
     const clientName = document.getElementById("client-name").value.trim();
@@ -1944,6 +2025,7 @@ function initActions() {
     const body = encodeURIComponent(bodyLines.join("\n"));
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   });
+  }
 
   if (shareToolBtn) {
     shareToolBtn.addEventListener("click", async () => {
@@ -1971,7 +2053,15 @@ function initActions() {
 }
 
 function generatePdf(mode, filenameBase) {
+  if (typeof html2pdf !== "function") {
+    const msg = "PDF library not loaded. Use Print (Ctrl+P) and choose Save to PDF.";
+    if (mode === "blob") return Promise.reject(new Error(msg));
+    alert(msg);
+    window.print();
+    return Promise.resolve();
+  }
   const element = document.getElementById("document-preview");
+  if (!element) return mode === "blob" ? Promise.resolve(null) : undefined;
   const meta = window._tpaiGetDocMeta?.() || {};
   const company = getCurrentCompany();
 
@@ -1982,29 +2072,87 @@ function generatePdf(mode, filenameBase) {
     .replace(/\s+/g, "-")
     .slice(0, 24)}.pdf`;
 
+  const A4_WIDTH_PX = 595;
+  const clone = element.cloneNode(true);
+  clone.id = "document-preview-pdf-clone";
+  clone.style.width = A4_WIDTH_PX + "px";
+  clone.style.maxWidth = A4_WIDTH_PX + "px";
+  clone.style.boxShadow = "none";
+  clone.style.background = "#fff";
+  const container = document.createElement("div");
+  container.id = "pdf-capture-container";
+  container.style.cssText = "position:fixed;left:-9999px;top:0;width:" + A4_WIDTH_PX + "px;background:#fff;z-index:-1;";
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
   const opt = {
-    margin: [5, 5, 5, 5],
+    margin: 10,
     filename,
-    image: { type: "jpeg", quality: 0.98 },
+    image: { type: "png", quality: 1 },
     html2canvas: {
       scale: 2,
       useCORS: true,
+      allowTaint: true,
       scrollX: 0,
       scrollY: 0,
       letterRendering: true,
+      logging: false,
     },
-    jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-    pagebreak: { mode: [] },
+    jsPDF: { unit: "pt", format: "a4", orientation: "portrait", hotfixes: ["px_scaling"] },
+    pagebreak: { mode: ["avoid-all"] },
   };
 
-  if (mode === "blob") {
-    return html2pdf().set(opt).from(element).outputPdf("blob");
+  function cleanup() {
+    if (container && container.parentNode) container.remove();
   }
 
-  if (mode === "download" || mode === "save") {
-    html2pdf().set(opt).from(element).save();
-    return Promise.resolve();
+  function runPdf(fromEl) {
+    if (mode === "blob") {
+      return html2pdf()
+        .set(opt)
+        .from(fromEl)
+        .outputPdf("blob")
+        .then(function (blob) {
+          cleanup();
+          return blob;
+        })
+        .catch(function (err) {
+          cleanup();
+          throw err;
+        });
+    }
+    if (mode === "download" || mode === "save") {
+      return html2pdf()
+        .set(opt)
+        .from(fromEl)
+        .save()
+        .then(cleanup)
+        .catch(function (err) {
+          cleanup();
+          throw err;
+        });
+    }
   }
+
+  const imgs = clone.querySelectorAll("img");
+  const loadPromises = Array.from(imgs).map(
+    (img) =>
+      new Promise(function (resolve) {
+        if (img.complete) resolve();
+        else img.onload = resolve;
+        img.onerror = resolve;
+        setTimeout(resolve, 1500);
+      })
+  );
+
+  return Promise.all(loadPromises)
+    .then(function () {
+      return runPdf(clone);
+    })
+    .catch(function (err) {
+      cleanup();
+      throw err;
+    });
 }
 
 function initLangToggle() {

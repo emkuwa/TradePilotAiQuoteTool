@@ -1,0 +1,10 @@
+{
+  "name": "TradePilotAI Document Studio",
+  "short_name": "TradePilotAI",
+  "description": "Smart business document automation – quotations, invoices, delivery notes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "any"
+}
