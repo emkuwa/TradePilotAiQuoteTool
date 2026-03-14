@@ -2117,7 +2117,7 @@ function generatePdf(mode, filenameBase) {
   overlay.appendChild(wrapper);
 
   var opt = {
-    margin: [28, 56, 28, 56],
+    margin: [28, 28, 28, 28],
     filename: filename,
     image: { type: "png", quality: 1 },
     html2canvas: {
