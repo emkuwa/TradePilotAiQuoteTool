@@ -2088,9 +2088,8 @@ function generatePdf(mode, filenameBase) {
     .replace(/\s+/g, "-")
     .slice(0, 24)}.pdf`;
 
-  const A4_WIDTH_PT = 595;
-  const PDF_MARGIN_PT = 28;
-  const contentWidthPx = A4_WIDTH_PT - 2 * PDF_MARGIN_PT;
+  const A4_WIDTH_PX = 595;
+  const PDF_PADDING_PX = 28;
   const origWidth = element.style.width || "";
   const origMaxWidth = element.style.maxWidth || "";
   const origBoxShadow = element.style.boxShadow || "";
@@ -2102,14 +2101,28 @@ function generatePdf(mode, filenameBase) {
   overlay.textContent = "Generating PDF…";
   document.body.appendChild(overlay);
 
-  element.style.width = contentWidthPx + "px";
-  element.style.maxWidth = contentWidthPx + "px";
-  element.style.boxShadow = "none";
-  element.style.overflow = "visible";
+  var pdfTarget = element;
+  var wrapper = null;
+  wrapper = document.createElement("div");
+  wrapper.id = "pdf-page-wrapper";
+  wrapper.style.cssText = "width:" + A4_WIDTH_PX + "px;box-sizing:border-box;padding:0 " + PDF_PADDING_PX + "px;background:#fff;";
+  var clone = element.cloneNode(true);
+  clone.id = "document-preview-pdf-clone";
+  clone.style.width = "100%";
+  clone.style.maxWidth = "100%";
+  clone.style.boxShadow = "none";
+  clone.style.overflow = "visible";
+  wrapper.appendChild(clone);
+  wrapper.style.position = "fixed";
+  wrapper.style.left = "-9999px";
+  wrapper.style.top = "0";
+  wrapper.style.zIndex = "-1";
+  document.body.appendChild(wrapper);
+  pdfTarget = wrapper;
 
-  const opt = {
-    margin: PDF_MARGIN_PT,
-    filename,
+  var opt = {
+    margin: 0,
+    filename: filename,
     image: { type: "png", quality: 1 },
     html2canvas: {
       scale: 2,
@@ -2124,11 +2137,12 @@ function generatePdf(mode, filenameBase) {
     pagebreak: { mode: ["avoid-all"] },
   };
 
-  function restore() {
+  function cleanup() {
     element.style.width = origWidth;
     element.style.maxWidth = origMaxWidth;
     element.style.boxShadow = origBoxShadow;
     element.style.overflow = origOverflow;
+    if (wrapper && wrapper.parentNode) wrapper.remove();
     if (overlay && overlay.parentNode) overlay.remove();
   }
 
@@ -2136,31 +2150,44 @@ function generatePdf(mode, filenameBase) {
     if (mode === "blob") {
       return html2pdf()
         .set(opt)
-        .from(element)
+        .from(pdfTarget)
         .outputPdf("blob")
         .then(function (blob) {
-          restore();
+          cleanup();
           return blob;
         })
         .catch(function (err) {
-          restore();
+          cleanup();
           throw err;
         });
     }
     if (mode === "download" || mode === "save") {
       return html2pdf()
         .set(opt)
-        .from(element)
+        .from(pdfTarget)
         .save()
-        .then(restore)
+        .then(cleanup)
         .catch(function (err) {
-          restore();
+          cleanup();
           throw err;
         });
     }
   }
 
-  return runPdf();
+  var imgs = clone.querySelectorAll("img");
+  var loadPromises = Array.from(imgs).map(function (img) {
+    return new Promise(function (resolve) {
+      if (img.complete) resolve();
+      else img.onload = resolve;
+      img.onerror = resolve;
+      setTimeout(resolve, 1500);
+    });
+  });
+
+  return Promise.all(loadPromises).then(runPdf).catch(function (err) {
+    cleanup();
+    throw err;
+  });
 }
 
 function initLangToggle() {
