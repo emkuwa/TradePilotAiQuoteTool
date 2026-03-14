@@ -911,7 +911,60 @@ function initAdminPanel() {
       console.error("Generate invitation link error:", e);
       alert(currentLang() === "sw" ? "Hitilafu wakati wa kutengeneza kiungo. Jaribu tena." : "Error generating link. Please try again.");
     }
-  });
+  }
+
+  if (!isCurrentUserAdmin()) {
+    btn.addEventListener("click", () => {
+      var code = prompt(currentLang() === "sw" ? "Ingiza nenosiri la msimamizi:" : "Enter admin password:");
+      if (code === null) return;
+      if ((code || "").trim() !== ADMIN_CODE) {
+        alert(currentLang() === "sw" ? "Nenosiri si sahihi." : "Wrong password.");
+        return;
+      }
+      var u = getSimpleUser();
+      if (u) {
+        saveSimpleUser({ ...u, isAdmin: true });
+        updateAdminTabVisibility();
+      }
+      doGenerateInviteLink();
+    });
+    return;
+  }
+
+  const hintEl = document.getElementById("invite-logo-hint");
+  if (hintEl) {
+    const cloudSet = (typeof CLOUDINARY_CLOUD_NAME !== "undefined" && CLOUDINARY_CLOUD_NAME && typeof CLOUDINARY_UPLOAD_PRESET !== "undefined" && CLOUDINARY_UPLOAD_PRESET);
+    hintEl.textContent = cloudSet
+      ? (I18N[currentLang()] && I18N[currentLang()].inviteLogoHintReady) || "Logo will be uploaded to Cloudinary and included in the invite link."
+      : (I18N[currentLang()] && I18N[currentLang()].inviteLogoHint) || "Set CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET in app.js.";
+  }
+
+  if (logoInput) {
+    logoInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      adminInviteLogoUrl = null;
+      if (logoFilenameEl) logoFilenameEl.textContent = "";
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        if (logoFilenameEl) logoFilenameEl.textContent = currentLang() === "sw" ? "Chagua picha tu." : "Please choose an image.";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const dataUrl = reader.result;
+        if (logoFilenameEl) logoFilenameEl.textContent = currentLang() === "sw" ? "Inapakia…" : "Uploading…";
+        const link = await uploadImageToCloudinary(dataUrl);
+        adminInviteLogoUrl = link || null;
+        if (logoFilenameEl) {
+          if (link) logoFilenameEl.textContent = currentLang() === "sw" ? file.name + " ✓ (wamepakiwa)" : file.name + " ✓ (uploaded)";
+          else logoFilenameEl.textContent = file.name + (currentLang() === "sw" ? " (tunaweka tu jina)" : " (name only)");
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  btn.addEventListener("click", () => doGenerateInviteLink());
 
   if (copyBtn) copyBtn.addEventListener("click", async () => {
     const url = urlInput.value;
