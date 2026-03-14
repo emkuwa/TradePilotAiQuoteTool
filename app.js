@@ -2078,7 +2078,9 @@ function generatePdf(mode, filenameBase) {
     .replace(/\s+/g, "-")
     .slice(0, 24)}.pdf`;
 
-  const A4_WIDTH_PX = 595;
+  const A4_WIDTH_PT = 595;
+  const PDF_MARGIN_PT = 28;
+  const contentWidthPx = A4_WIDTH_PT - 2 * PDF_MARGIN_PT;
   const origWidth = element.style.width || "";
   const origMaxWidth = element.style.maxWidth || "";
   const origBoxShadow = element.style.boxShadow || "";
@@ -2090,13 +2092,13 @@ function generatePdf(mode, filenameBase) {
   overlay.textContent = "Generating PDF…";
   document.body.appendChild(overlay);
 
-  element.style.width = A4_WIDTH_PX + "px";
-  element.style.maxWidth = A4_WIDTH_PX + "px";
+  element.style.width = contentWidthPx + "px";
+  element.style.maxWidth = contentWidthPx + "px";
   element.style.boxShadow = "none";
   element.style.overflow = "visible";
 
   const opt = {
-    margin: 10,
+    margin: PDF_MARGIN_PT,
     filename,
     image: { type: "png", quality: 1 },
     html2canvas: {
