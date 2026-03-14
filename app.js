@@ -2293,6 +2293,7 @@ function fullInit() {
   initPreparedByBindings();
   initTerms();
   initItemsTable();
+  initPrintFit();
   initActions();
   renderHistory();
   initLangToggle();
