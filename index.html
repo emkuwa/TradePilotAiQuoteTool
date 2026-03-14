@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradePilotAI Document Generator Demo</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Demo Banner -->
+  <div class="demo-banner">
+    <div class="demo-banner-text">
+      <strong>TradePilotAI Document Generator – Free forever.</strong>
+      <span>Generate quotations, invoices & delivery notes for free. For advanced automation and extra features, use the full TradePilotAI platform.</span>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <!-- Top Navigation -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="brand-logo-circle">TP</div>
+        <div class="brand-text">
+          <div class="brand-title">TradePilotAI Document Studio</div>
+          <div class="brand-subtitle">Smart business document automation</div>
+        </div>
+      </div>
+      <nav class="top-nav-links">
+        <button class="lang-toggle" id="lang-toggle" type="button" title="English / Kiswahili">EN | SW</button>
+        <button type="button" id="btn-create-new-doc" class="btn btn-create-new primary" data-i18n="createNewDoc">Create New Document</button>
+        <button class="nav-tab active" data-tab="create-tab" data-i18n="navCreate">Create Document</button>
+        <button class="nav-tab" data-tab="history-tab" data-i18n="navHistory">History</button>
+        <button class="nav-tab" data-tab="settings-tab" data-i18n="navSettings">Settings</button>
+      </nav>
+    </header>
+
+    <main class="main-layout">
+      <!-- Sidebar: Configuration (no Company Settings here; moved to Settings tab) -->
+      <aside class="sidebar">
+        <section class="panel">
+          <h2 class="panel-title" data-i18n="documentOptions">Document Options</h2>
+          <div class="field-group">
+            <label for="document-type">Document Type</label>
+            <select id="document-type">
+              <option value="quotation">Quotation</option>
+              <option value="invoice">Invoice</option>
+              <option value="delivery-note">Delivery Note</option>
+              <option value="proforma">Proforma Invoice</option>
+              <option value="letterhead">Letterhead</option>
+              <option value="receipt">Receipt</option>
+              <option value="credit-note">Credit Note</option>
+              <option value="purchase-order">Purchase Order</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="document-date">Date</label>
+              <input type="date" id="document-date">
+            </div>
+            <div class="field-group">
+              <label for="document-number">Document Number</label>
+              <input type="text" id="document-number" readonly>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title" data-i18n="preparedBy">Prepared By</h2>
+          <div class="field-group">
+            <label for="prepared-by">Prepared By</label>
+            <input type="text" id="prepared-by" placeholder="Your name">
+          </div>
+          <div class="field-group">
+            <label for="authorized-signature">Authorized Signature</label>
+            <input type="text" id="authorized-signature" placeholder="Name or position">
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title" data-i18n="actions">Actions</h2>
+          <div class="button-stack">
+            <button id="print-document" class="btn ghost" data-i18n="print">Print</button>
+            <button id="download-pdf" class="btn secondary" data-i18n="downloadPdf">Download PDF</button>
+            <button id="save-document" class="btn primary" data-i18n="save">Save</button>
+            <button id="send-email" class="btn secondary" data-i18n="sendEmail">Send via Email</button>
+            <button id="share-whatsapp" class="btn success" data-i18n="sendWhatsApp">Send via WhatsApp</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Share &amp; Free Version</h2>
+          <p class="share-copy">
+            This tool is <strong>free for everybody forever</strong>. If it helps you, please share it with friends, clients and your team.
+          </p>
+          <div class="button-stack">
+            <button id="share-tool" class="btn primary" data-i18n="shareTool">Share this Tool</button>
+          </div>
+          <p class="share-copy small">
+            TradePilotAI full platform adds AI chat assistants, accounting &amp; bookkeeping automation, CRM, inventory, tasks, reports and many more tools. This generator stays free forever; advanced automation is available when you upgrade to the full platform.
+          </p>
+        </section>
+      </aside>
+
+      <!-- Main Content -->
+      <section class="content">
+        <!-- Create Tab -->
+        <div id="create-tab" class="tab-view active">
+          <p id="document-from-label" class="document-from-label" aria-hidden="true"></p>
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="clientDetails">Client Details</h2>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="client-name">Client Name</label>
+                <input type="text" id="client-name" placeholder="Full name">
+              </div>
+              <div class="field-group">
+                <label for="client-company">Client Company</label>
+                <input type="text" id="client-company" placeholder="Company name">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="client-address">Client Address</label>
+                <textarea id="client-address" rows="2" placeholder="Address"></textarea>
+              </div>
+              <div class="field-group">
+                <label for="client-phone">Client Phone</label>
+                <input type="text" id="client-phone" placeholder="Phone number">
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="items">Items</h2>
+            <div class="table-wrapper">
+              <table id="items-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="items-body">
+                </tbody>
+              </table>
+              <datalist id="item-suggestions"></datalist>
+            </div>
+            <div class="items-actions">
+              <button id="add-item-row" class="btn ghost small">+ Add Row</button>
+            </div>
+            <div class="common-items-panel">
+              <label class="common-items-label">Common items for this sector</label>
+              <div id="common-items-chips" class="common-items-chips"></div>
+            </div>
+
+            <div class="totals-grid">
+              <div></div>
+              <div class="totals">
+                <div class="total-row">
+                  <span>Discount (%)</span>
+                  <input id="discount-rate" type="number" min="0" max="100" step="0.1" class="discount-input" placeholder="0">
+                </div>
+                <div class="total-row">
+                  <span>Subtotal</span>
+                  <span id="subtotal-display">0.00</span>
+                </div>
+                <div class="total-row">
+                  <span>Discount</span>
+                  <span id="discount-display">0.00</span>
+                </div>
+                <div class="total-row">
+                  <span>VAT 18%</span>
+                  <span id="vat-display">0.00</span>
+                </div>
+                <div class="total-row grand">
+                  <span>Grand Total</span>
+                  <span id="grand-total-display">0.00</span>
+                </div>
+                <div class="total-row words">
+                  <span>Amount in words</span>
+                  <span id="amount-words-display"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="termsConditions">Terms &amp; Conditions</h2>
+            <textarea id="terms" rows="3" placeholder="Add payment terms, validity period, delivery conditions and any other important notes for your documents."></textarea>
+          </section>
+
+          <section class="panel" id="letterhead-ai-panel" style="display: none;">
+            <h2 class="panel-title">Letterhead AI-style Writer</h2>
+            <div class="field-group">
+              <label for="letter-ai-prompt">Describe what this letter is about</label>
+              <textarea id="letter-ai-prompt" rows="3" placeholder="e.g. Follow-up on unpaid invoice, request for updated contract terms, or confirmation of delivery schedule..."></textarea>
+            </div>
+            <div class="field-group">
+              <label for="letter-body">Letter body</label>
+              <textarea id="letter-body" rows="10" placeholder="Your letter content will appear here. You can edit it freely after generation."></textarea>
+            </div>
+            <div class="items-actions">
+              <button id="letter-generate" class="btn primary small">Generate draft</button>
+              <button id="letter-improve" class="btn secondary small">Improve / rephrase</button>
+              <button id="letter-clear" class="btn ghost small">Clear text</button>
+            </div>
+          </section>
+
+          <!-- Document Preview -->
+          <section class="panel">
+            <div class="panel-header-with-meta">
+              <h2 class="panel-title" data-i18n="documentPreview">Document Preview</h2>
+              <span class="preview-hint">This preview is what will be exported to PDF / print.</span>
+            </div>
+            <div id="document-preview-wrapper">
+              <div id="document-preview" class="document-a4">
+                <div class="watermark"></div>
+                <header class="doc-header">
+                  <div class="doc-logo-box">
+                    <img id="company-logo" src="assets/logo-demo.png" alt="Company Logo" class="company-logo">
+                  </div>
+                  <div class="doc-company-text">
+                    <h1 id="doc-company-name">Core Logistics Limited</h1>
+                    <p id="doc-company-address">
+                      Kurasini, Mivinjeni Plot No.321<br>
+                      P.O.Box 13878 Dar es Salaam Tanzania
+                    </p>
+                    <p id="doc-company-contact">
+                      Tel: +255 784 715963<br>
+                      E-mail: info@example.com<br>
+                      Website: https://corelogistics.com
+                    </p>
+                    <div id="doc-company-extra" class="doc-company-extra"></div>
+                  </div>
+                  <div class="doc-meta-card">
+                    <div class="doc-type" id="doc-type-label">QUOTATION</div>
+                    <div class="doc-meta-fields">
+                      <div class="doc-meta-field">
+                        <span class="doc-meta-label">DATE</span>
+                        <span class="doc-meta-value" id="doc-date-display"></span>
+                      </div>
+                      <div class="doc-meta-field">
+                        <span class="doc-meta-label" id="doc-number-label">QUOTE NO.</span>
+                        <span class="doc-meta-value" id="doc-number-display"></span>
+                      </div>
+                    </div>
+                  </div>
+                </header>
+
+                <section class="doc-section doc-client-section">
+                  <div class="doc-section-title">Client Information</div>
+                  <div class="doc-client-grid">
+                    <div>
+                      <div class="doc-label">Client Name</div>
+                      <div class="doc-value" id="doc-client-name"></div>
+                    </div>
+                    <div>
+                      <div class="doc-label">Company</div>
+                      <div class="doc-value" id="doc-client-company"></div>
+                    </div>
+                    <div>
+                      <div class="doc-label">Address</div>
+                      <div class="doc-value" id="doc-client-address"></div>
+                    </div>
+                    <div>
+                      <div class="doc-label">Phone</div>
+                      <div class="doc-value" id="doc-client-phone"></div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="doc-section" id="doc-letter-section" style="display:none;">
+                  <div class="doc-section-title">Letter body</div>
+                  <div id="doc-letter-body" class="doc-letter-body"></div>
+                </section>
+
+                <section class="doc-section">
+                  <table class="doc-items-table">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody id="doc-items-body">
+                    </tbody>
+                  </table>
+                </section>
+
+                <section class="doc-section doc-totals-section">
+                  <div class="doc-terms">
+                    <div class="doc-section-title">Terms &amp; Conditions</div>
+                    <div id="doc-terms-text" class="doc-terms-text"></div>
+                    <div class="doc-bank">
+                      <div class="doc-section-title">Bank Details</div>
+                      <div id="doc-bank-text" class="doc-bank-text"></div>
+                    </div>
+                  </div>
+                  <div class="doc-totals-box">
+                    <div class="doc-total-row">
+                      <span>Subtotal</span>
+                      <span id="doc-subtotal"></span>
+                    </div>
+                    <div class="doc-total-row">
+                      <span>Discount</span>
+                      <span id="doc-discount"></span>
+                    </div>
+                    <div class="doc-total-row">
+                      <span>VAT 18%</span>
+                      <span id="doc-vat"></span>
+                    </div>
+                    <div class="doc-total-row grand">
+                      <span>Grand Total</span>
+                      <span id="doc-grand-total"></span>
+                    </div>
+                    <div class="doc-amount-words">
+                      <span class="doc-amount-words-label">Amount in words:</span>
+                      <span id="doc-amount-words" class="doc-amount-words-value"></span>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="doc-section doc-signature-section">
+                  <div class="doc-signature-block">
+                    <div class="doc-label">Prepared By</div>
+                    <div class="doc-value" id="doc-prepared-by"></div>
+                  </div>
+                  <div class="doc-signature-block">
+                    <div class="doc-label">Authorized Signature</div>
+                    <div class="doc-value" id="doc-authorized-signature"></div>
+                  </div>
+                  <div id="doc-dealers-footer" class="doc-dealers-line"></div>
+                  <div class="doc-signature-lines-row">
+                    <div class="signature-line"></div>
+                    <div class="signature-line"></div>
+                  </div>
+                </section>
+
+                <footer class="doc-footer">
+                  <div class="footer-branding">
+                    <div class="footer-title">Powered by TradePilotAI</div>
+                    <div class="footer-text">
+                      Smart AI tools for modern African businesses.
+                      TradePilotAI automates tax calculations, invoices, quotations, delivery notes, client management, and accounting reports.
+                    </div>
+                  </div>
+                  <a class="footer-cta-btn" href="https://wa.me/255716002790" target="_blank" rel="noopener">
+                    Start your digital business system today
+                  </a>
+                </footer>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history-tab" class="tab-view">
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="documentHistory">Document History</h2>
+            <p class="history-intro" data-i18n="historyIntro">
+              Recently generated documents are stored locally in your browser. You can search, reopen, duplicate or delete them from here.
+            </p>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="history-search" data-i18n="searchDocuments">Search documents</label>
+                <input id="history-search" type="text" placeholder="Search by client, number, type or date">
+              </div>
+              <div class="field-group">
+                <label data-i18n="summary">Summary</label>
+                <div id="history-summary" class="history-summary" data-i18n="noDocumentsYet">No documents yet.</div>
+              </div>
+            </div>
+            <div id="history-list" class="history-list">
+              <!-- Filled by JS -->
+            </div>
+          </section>
+        </div>
+
+        <!-- Settings Tab (Company Settings only when user opens it) -->
+        <div id="settings-tab" class="tab-view">
+          <section class="panel settings-panel">
+            <h2 class="panel-title" data-i18n="companySettings">Company Settings</h2>
+            <div class="field-group">
+              <label for="company-name">Company Name</label>
+              <input type="text" id="company-name" placeholder="Your company name">
+            </div>
+            <div class="field-group">
+              <label for="company-address">Company Address</label>
+              <textarea id="company-address" rows="3" placeholder="Your company address&#10;e.g. street, city, country"></textarea>
+            </div>
+            <div class="field-group">
+              <label for="company-sector">Business Sector</label>
+              <select id="company-sector">
+                <option value="logistics">Logistics &amp; Transport</option>
+                <option value="retail">Retail &amp; Wholesale</option>
+                <option value="services">Professional Services</option>
+                <option value="construction">Construction &amp; Engineering</option>
+                <option value="hospitality">Hospitality &amp; Restaurants</option>
+                <option value="healthcare">Healthcare &amp; Clinics</option>
+                <option value="agriculture">Agriculture &amp; Agri‑business</option>
+                <option value="generic">Generic / Other</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="company-phone">Phone</label>
+                <input type="text" id="company-phone" placeholder="Your main phone number">
+              </div>
+              <div class="field-group">
+                <label for="company-email">Email</label>
+                <input type="email" id="company-email" placeholder="Your main email address">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="company-website">Website</label>
+                <input type="text" id="company-website" placeholder="https://yourcompany.com">
+              </div>
+              <div class="field-group">
+                <label for="company-socials">Social Media</label>
+                <input type="text" id="company-socials" placeholder="@instagram, @twitter, etc.">
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="company-dealers">Dealers in / Tagline</label>
+              <input type="text" id="company-dealers" placeholder="e.g. Dealers in logistics, customs clearance and warehousing">
+            </div>
+            <div class="field-group">
+              <label for="company-bank-details">Bank Details</label>
+              <textarea id="company-bank-details" rows="3" placeholder="Bank name&#10;Account name&#10;Account number&#10;Branch / SWIFT"></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="company-currency">Currency</label>
+                <input type="text" id="company-currency" placeholder="e.g. USD, TZS" maxlength="4">
+              </div>
+              <div class="field-group">
+                <label for="logo-upload">Logo Upload</label>
+                <input type="file" id="logo-upload" accept="image/*">
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Custom Company Fields</label>
+              <button id="add-company-field" class="btn ghost small full-width">+ Add Custom Field (e.g. TIN, Branch)</button>
+              <div id="company-extra-list" class="company-extra-list"></div>
+            </div>
+            <button id="save-company-settings" class="btn primary full-width">Save Company Profile</button>
+            <button id="reset-company-settings" class="btn ghost full-width small">Reset to Demo Company</button>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPQyoS9iY1sH4Jzdd1zM53EGvmeq2P087amS+o566hdSYG+E4BJ0bG0VxZgNihICv16uGm2vqzYViPqXw/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
