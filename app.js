@@ -2097,15 +2097,12 @@ function generatePdf(mode, filenameBase) {
 
   const overlay = document.createElement("div");
   overlay.id = "pdf-gen-overlay";
-  overlay.style.cssText = "position:fixed;inset:0;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;z-index:99999;font-size:1rem;color:#333;";
-  overlay.textContent = "Generating PDF…";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;z-index:99999;";
   document.body.appendChild(overlay);
 
-  var pdfTarget = element;
-  var wrapper = null;
-  wrapper = document.createElement("div");
+  var wrapper = document.createElement("div");
   wrapper.id = "pdf-page-wrapper";
-  wrapper.style.cssText = "width:" + A4_WIDTH_PX + "px;box-sizing:border-box;padding:0 " + PDF_PADDING_PX + "px;background:#fff;";
+  wrapper.style.cssText = "width:" + A4_WIDTH_PX + "px;box-sizing:border-box;padding:0 " + PDF_PADDING_PX + "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);";
   var clone = element.cloneNode(true);
   clone.id = "document-preview-pdf-clone";
   clone.style.width = "100%";
@@ -2113,12 +2110,8 @@ function generatePdf(mode, filenameBase) {
   clone.style.boxShadow = "none";
   clone.style.overflow = "visible";
   wrapper.appendChild(clone);
-  wrapper.style.position = "fixed";
-  wrapper.style.left = "-9999px";
-  wrapper.style.top = "0";
-  wrapper.style.zIndex = "-1";
-  document.body.appendChild(wrapper);
-  pdfTarget = wrapper;
+  overlay.appendChild(wrapper);
+  var pdfTarget = wrapper;
 
   var opt = {
     margin: 0,
