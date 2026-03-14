@@ -2089,11 +2089,14 @@ function generatePdf(mode, filenameBase) {
     .slice(0, 24)}.pdf`;
 
   const A4_WIDTH_PX = 595;
+  const A4_HEIGHT_PX = 842;
   const PDF_PADDING_PX = 28;
   const origWidth = element.style.width || "";
   const origMaxWidth = element.style.maxWidth || "";
   const origBoxShadow = element.style.boxShadow || "";
   const origOverflow = element.style.overflow || "";
+  const origTransform = element.style.transform || "";
+  const origTransformOrigin = element.style.transformOrigin || "";
   const origParent = element.parentNode;
   const origNextSibling = element.nextSibling;
 
@@ -2108,13 +2111,23 @@ function generatePdf(mode, filenameBase) {
 
   var wrapper = document.createElement("div");
   wrapper.id = "pdf-page-wrapper";
-  wrapper.style.cssText = "width:" + A4_WIDTH_PX + "px;box-sizing:border-box;padding:0 " + PDF_PADDING_PX + "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);";
-  element.style.width = "100%";
-  element.style.maxWidth = "100%";
+  wrapper.style.cssText = "width:" + A4_WIDTH_PX + "px;height:" + A4_HEIGHT_PX + "px;box-sizing:border-box;padding:" + PDF_PADDING_PX + "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;";
+  element.style.width = (A4_WIDTH_PX - 2 * PDF_PADDING_PX) + "px";
+  element.style.maxWidth = (A4_WIDTH_PX - 2 * PDF_PADDING_PX) + "px";
   element.style.boxShadow = "none";
   element.style.overflow = "visible";
   wrapper.appendChild(element);
   overlay.appendChild(wrapper);
+
+  function fitElementToA4() {
+    var innerH = A4_HEIGHT_PX - 2 * PDF_PADDING_PX;
+    element.style.transformOrigin = "top left";
+    element.style.transform = "";
+    if (element.scrollHeight > innerH) {
+      var scale = innerH / element.scrollHeight;
+      element.style.transform = "scale(" + scale + ")";
+    }
+  }
 
   var opt = {
     margin: 0,
@@ -2122,6 +2135,7 @@ function generatePdf(mode, filenameBase) {
     image: { type: "png", quality: 1 },
     html2canvas: {
       width: A4_WIDTH_PX,
+      height: A4_HEIGHT_PX,
       scale: 2,
       useCORS: true,
       allowTaint: true,
