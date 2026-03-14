@@ -842,48 +842,10 @@ function initAdminPanel() {
   const logoInput = document.getElementById("invite-company-logo");
   const logoFilenameEl = document.getElementById("invite-logo-filename");
   if (!btn || !resultEl || !urlInput) return;
-  if (!isCurrentUserAdmin()) {
-    btn.addEventListener("click", () => {
-      alert(currentLang() === "sw" ? "Hii ni kwa wasimamizi tu. Weka nenosiri la admin." : "This is for admins only. Enter the admin secret.");
-    });
-    return;
-  }
-
-  const hintEl = document.getElementById("invite-logo-hint");
-  if (hintEl) {
-    const cloudSet = (typeof CLOUDINARY_CLOUD_NAME !== "undefined" && CLOUDINARY_CLOUD_NAME && typeof CLOUDINARY_UPLOAD_PRESET !== "undefined" && CLOUDINARY_UPLOAD_PRESET);
-    hintEl.textContent = cloudSet
-      ? (I18N[currentLang()] && I18N[currentLang()].inviteLogoHintReady) || "Logo will be uploaded to Cloudinary and included in the invite link."
-      : (I18N[currentLang()] && I18N[currentLang()].inviteLogoHint) || "Set CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET in app.js.";
-  }
 
   let adminInviteLogoUrl = null;
-  if (logoInput) {
-    logoInput.addEventListener("change", async (e) => {
-      const file = e.target.files?.[0];
-      adminInviteLogoUrl = null;
-      if (logoFilenameEl) logoFilenameEl.textContent = "";
-      if (!file) return;
-      if (!file.type.startsWith("image/")) {
-        if (logoFilenameEl) logoFilenameEl.textContent = currentLang() === "sw" ? "Chagua picha tu." : "Please choose an image.";
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const dataUrl = reader.result;
-        if (logoFilenameEl) logoFilenameEl.textContent = currentLang() === "sw" ? "Inapakia…" : "Uploading…";
-        const link = await uploadImageToCloudinary(dataUrl);
-        adminInviteLogoUrl = link || null;
-        if (logoFilenameEl) {
-          if (link) logoFilenameEl.textContent = currentLang() === "sw" ? file.name + " ✓ (wamepakiwa)" : file.name + " ✓ (uploaded)";
-          else logoFilenameEl.textContent = file.name + (currentLang() === "sw" ? " (tunaweka tu jina)" : " (name only)");
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  }
 
-  btn.addEventListener("click", () => {
+  function doGenerateInviteLink() {
     try {
       const inviteeName = (document.getElementById("invitee-name")?.value || "").trim();
       const inviteePassword = (document.getElementById("invitee-password")?.value || "").trim();
