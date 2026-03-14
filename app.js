@@ -884,69 +884,74 @@ function initAdminPanel() {
   }
 
   btn.addEventListener("click", () => {
-    const inviteeName = (document.getElementById("invitee-name")?.value || "").trim();
-    const inviteePassword = (document.getElementById("invitee-password")?.value || "").trim();
-    if (!inviteePassword) {
-      alert(currentLang() === "sw" ? "Weka nenosiri kwa mgeni." : "Set a password for the invitee.");
-      return;
-    }
-    const companyProfile = {
-      name: (document.getElementById("invite-company-name")?.value || "").trim() || "My Business",
-      address: (document.getElementById("invite-company-address")?.value || "").trim(),
-      phone: (document.getElementById("invite-company-phone")?.value || "").trim(),
-      email: (document.getElementById("invite-company-email")?.value || "").trim(),
-      bankDetails: (document.getElementById("invite-company-bank")?.value || "").trim(),
-      currency: (document.getElementById("invite-company-currency")?.value || "").trim(),
-      dealers: (document.getElementById("invite-company-dealers")?.value || "").trim(),
-      sector: "generic",
-      website: "",
-      socials: "",
-      logoDataUrl: null,
-      logoUrl: adminInviteLogoUrl || undefined,
-      extraFields: [],
-    };
-    const base = (typeof INVITE_BASE_URL !== "undefined" && INVITE_BASE_URL)
-      ? INVITE_BASE_URL.replace(/\/$/, "")
-      : (window.location.origin + window.location.pathname).replace(/\/$/, "");
-    let inviteParam;
-    let inviteUrl;
-    if (typeof LZString !== "undefined" && LZString.compressToEncodedURIComponent) {
-      const shortPayload = {
-        cp: {
-          n: companyProfile.name,
-          a: companyProfile.address,
-          p: companyProfile.phone,
-          e: companyProfile.email,
-          b: companyProfile.bankDetails,
-          c: companyProfile.currency,
-          d: companyProfile.dealers,
-          s: companyProfile.sector || "generic",
-          w: companyProfile.website || "",
-          so: companyProfile.socials || "",
-          lU: companyProfile.logoUrl || null,
-          x: companyProfile.extraFields || [],
-        },
-        pw: inviteePassword,
-        inv: inviteeName || companyProfile.name,
+    try {
+      const inviteeName = (document.getElementById("invitee-name")?.value || "").trim();
+      const inviteePassword = (document.getElementById("invitee-password")?.value || "").trim();
+      if (!inviteePassword) {
+        alert(currentLang() === "sw" ? "Weka nenosiri kwa mgeni." : "Set a password for the invitee.");
+        return;
+      }
+      const companyProfile = {
+        name: (document.getElementById("invite-company-name")?.value || "").trim() || "My Business",
+        address: (document.getElementById("invite-company-address")?.value || "").trim(),
+        phone: (document.getElementById("invite-company-phone")?.value || "").trim(),
+        email: (document.getElementById("invite-company-email")?.value || "").trim(),
+        bankDetails: (document.getElementById("invite-company-bank")?.value || "").trim(),
+        currency: (document.getElementById("invite-company-currency")?.value || "").trim(),
+        dealers: (document.getElementById("invite-company-dealers")?.value || "").trim(),
+        sector: "generic",
+        website: "",
+        socials: "",
+        logoDataUrl: null,
+        logoUrl: adminInviteLogoUrl || undefined,
+        extraFields: [],
       };
-      inviteParam = LZString.compressToEncodedURIComponent(JSON.stringify(shortPayload));
-      inviteUrl = `${base}/?i=${inviteParam}`;
-    } else {
-      const payload = { companyProfile, password: inviteePassword, inviteeName: inviteeName || companyProfile.name };
-      inviteParam = encodeURIComponent(base64EncodeUtf8(JSON.stringify(payload)));
-      inviteUrl = `${base}/?invite=${inviteParam}`;
-    }
-    urlInput.value = inviteUrl;
-    resultEl.style.display = "block";
-    if (waBtn) {
-      const text = currentLang() === "sw"
-        ? `Karibu kutumia TradePilotAI. Wasifu wa biashara yako umeandaliwa. Fungua kiungo hiki na weka nenosiri lako: ${inviteePassword}`
-        : `You're invited to use TradePilotAI. Your business profile is ready. Open this link and use password: ${inviteePassword}`;
-      waBtn.href = `https://wa.me/?text=${encodeURIComponent(text + "\n\n" + inviteUrl)}`;
+      const base = (typeof INVITE_BASE_URL !== "undefined" && INVITE_BASE_URL)
+        ? INVITE_BASE_URL.replace(/\/$/, "")
+        : (window.location.origin + window.location.pathname).replace(/\/$/, "");
+      let inviteParam;
+      let inviteUrl;
+      if (typeof LZString !== "undefined" && LZString.compressToEncodedURIComponent) {
+        const shortPayload = {
+          cp: {
+            n: companyProfile.name,
+            a: companyProfile.address,
+            p: companyProfile.phone,
+            e: companyProfile.email,
+            b: companyProfile.bankDetails,
+            c: companyProfile.currency,
+            d: companyProfile.dealers,
+            s: companyProfile.sector || "generic",
+            w: companyProfile.website || "",
+            so: companyProfile.socials || "",
+            lU: companyProfile.logoUrl || null,
+            x: companyProfile.extraFields || [],
+          },
+          pw: inviteePassword,
+          inv: inviteeName || companyProfile.name,
+        };
+        inviteParam = LZString.compressToEncodedURIComponent(JSON.stringify(shortPayload));
+        inviteUrl = `${base}/?i=${inviteParam}`;
+      } else {
+        const payload = { companyProfile, password: inviteePassword, inviteeName: inviteeName || companyProfile.name };
+        inviteParam = encodeURIComponent(base64EncodeUtf8(JSON.stringify(payload)));
+        inviteUrl = `${base}/?invite=${inviteParam}`;
+      }
+      urlInput.value = inviteUrl;
+      resultEl.style.display = "block";
+      if (waBtn) {
+        const text = currentLang() === "sw"
+          ? `Karibu kutumia TradePilotAI. Wasifu wa biashara yako umeandaliwa. Fungua kiungo hiki na weka nenosiri lako: ${inviteePassword}`
+          : `You're invited to use TradePilotAI. Your business profile is ready. Open this link and use password: ${inviteePassword}`;
+        waBtn.href = `https://wa.me/?text=${encodeURIComponent(text + "\n\n" + inviteUrl)}`;
+      }
+    } catch (e) {
+      console.error("Generate invitation link error:", e);
+      alert(currentLang() === "sw" ? "Hitilafu wakati wa kutengeneza kiungo. Jaribu tena." : "Error generating link. Please try again.");
     }
   });
 
-  copyBtn.addEventListener("click", async () => {
+  if (copyBtn) copyBtn.addEventListener("click", async () => {
     const url = urlInput.value;
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
