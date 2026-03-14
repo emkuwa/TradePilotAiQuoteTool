@@ -2121,6 +2121,7 @@ function generatePdf(mode, filenameBase) {
     filename: filename,
     image: { type: "png", quality: 1 },
     html2canvas: {
+      width: A4_WIDTH_PX,
       scale: 2,
       useCORS: true,
       allowTaint: true,
