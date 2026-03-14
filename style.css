@@ -1186,6 +1186,27 @@ td select {
 @media print {
   body {
     background: white;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Show only the document preview (same as on-screen preview) */
+  body * {
+    visibility: hidden;
+  }
+  #document-preview-wrapper,
+  #document-preview-wrapper * {
+    visibility: visible;
+  }
+  #document-preview-wrapper {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .document-from-label,
@@ -1194,35 +1215,15 @@ td select {
     display: none !important;
   }
 
-  .app-shell > .top-nav,
-  .sidebar,
-  .panel:not(:last-child),
-  .tab-view:not(.active),
-  .history-tab {
-    display: none !important;
-  }
-
-  .app-shell {
-    box-shadow: none;
-    background: white;
-    margin: 0;
-    padding: 0;
-  }
-
-  .main-layout {
-    display: block;
-    padding: 0;
-  }
-
-  #document-preview-wrapper {
-    overflow: visible;
-    max-width: none;
-  }
-
   .document-a4 {
-    box-shadow: none;
-    border-radius: 0;
-    max-width: none;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    width: 210mm !important;
+    min-height: 297mm;
+    padding: 32px 32px 40px !important;
+    margin: 0 auto !important;
+    background: white !important;
   }
 }
 
