@@ -10,30 +10,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Demo Banner -->
-  <div class="demo-banner">
-    <div class="demo-banner-text">
-      <strong>TradePilotAI Document Generator – Free forever.</strong>
-      <span>Generate quotations, invoices & delivery notes for free. For advanced automation and extra features, use the full TradePilotAI platform.</span>
-    </div>
-  </div>
-
   <div class="app-shell">
     <!-- Top Navigation -->
     <header class="top-nav">
       <div class="brand">
-        <div class="brand-logo-circle">TP</div>
+        <div class="brand-logo-circle" id="brand-logo-trigger" title="">TP</div>
         <div class="brand-text">
-          <div class="brand-title">TradePilotAI Document Studio</div>
-          <div class="brand-subtitle">Smart business document automation</div>
+          <div class="brand-title" id="header-company-name">TradePilotAI Document Studio</div>
+          <div class="brand-subtitle" id="header-company-tagline">Smart business document automation</div>
         </div>
       </div>
       <nav class="top-nav-links">
         <button class="lang-toggle" id="lang-toggle" type="button" title="English / Kiswahili">EN | SW</button>
-        <button type="button" id="btn-create-new-doc" class="btn btn-create-new primary" data-i18n="createNewDoc">Create New Document</button>
         <button class="nav-tab active" data-tab="create-tab" data-i18n="navCreate">Create Document</button>
         <button class="nav-tab" data-tab="history-tab" data-i18n="navHistory">History</button>
         <button class="nav-tab" data-tab="settings-tab" data-i18n="navSettings">Settings</button>
+        <button class="nav-tab nav-tab-admin" data-tab="admin-tab" data-i18n="navAdmin" style="display:none;">Admin</button>
       </nav>
     </header>
 
@@ -42,6 +34,7 @@
       <aside class="sidebar">
         <section class="panel">
           <h2 class="panel-title" data-i18n="documentOptions">Document Options</h2>
+          <button type="button" id="btn-new-document" class="btn primary full-width" data-i18n="newDocument" style="margin-bottom: 0.75rem;">New document</button>
           <div class="field-group">
             <label for="document-type">Document Type</label>
             <select id="document-type">
@@ -64,6 +57,13 @@
               <label for="document-number">Document Number</label>
               <input type="text" id="document-number" readonly>
             </div>
+          </div>
+          <div class="field-group">
+            <label for="document-currency" data-i18n="documentCurrency">Currency for this document</label>
+            <select id="document-currency">
+              <option value="USD">US Dollar (USD)</option>
+              <option value="TZS">Tanzanian Shilling (TZS)</option>
+            </select>
           </div>
         </section>
 
@@ -221,7 +221,7 @@
             </div>
             <div id="document-preview-wrapper">
               <div id="document-preview" class="document-a4">
-                <div class="watermark"></div>
+                <div class="watermark"><img id="watermark-logo" alt="" role="presentation"></div>
                 <header class="doc-header">
                   <div class="doc-logo-box">
                     <img id="company-logo" src="assets/logo-demo.png" alt="Company Logo" class="company-logo">
@@ -386,8 +386,28 @@
           </section>
         </div>
 
-        <!-- Settings Tab (Company Settings only when user opens it) -->
+        <!-- Settings Tab (Account + Company Settings) -->
         <div id="settings-tab" class="tab-view">
+          <section class="panel account-panel">
+            <h2 class="panel-title" data-i18n="accountTitle">Your account</h2>
+            <div class="field-group">
+              <label for="account-name" data-i18n="accountName">Your name</label>
+              <input type="text" id="account-name" placeholder="">
+            </div>
+            <div class="field-group">
+              <label for="account-current-password" data-i18n="accountCurrentPassword">Current password</label>
+              <input type="password" id="account-current-password" placeholder="" autocomplete="off">
+            </div>
+            <div class="field-group">
+              <label for="account-new-password" data-i18n="accountNewPassword">New password</label>
+              <input type="password" id="account-new-password" placeholder="" autocomplete="new-password">
+            </div>
+            <div class="field-group">
+              <label for="account-confirm-password" data-i18n="accountConfirmPassword">Confirm new password</label>
+              <input type="password" id="account-confirm-password" placeholder="" autocomplete="new-password">
+            </div>
+            <button type="button" id="account-update-btn" class="btn primary full-width" data-i18n="accountUpdate">Update account</button>
+          </section>
           <section class="panel settings-panel">
             <h2 class="panel-title" data-i18n="companySettings">Company Settings</h2>
             <div class="field-group">
@@ -442,7 +462,10 @@
             <div class="field-row">
               <div class="field-group">
                 <label for="company-currency">Currency</label>
-                <input type="text" id="company-currency" placeholder="e.g. USD, TZS" maxlength="4">
+                <select id="company-currency">
+                  <option value="USD">US Dollar (USD)</option>
+                  <option value="TZS">Tanzanian Shilling (TZS)</option>
+                </select>
               </div>
               <div class="field-group">
                 <label for="logo-upload">Logo Upload</label>
@@ -458,12 +481,77 @@
             <button id="reset-company-settings" class="btn ghost full-width small">Reset to Demo Company</button>
           </section>
         </div>
+
+        <!-- Admin Tab (visible only for admin): create account + invitation link -->
+        <div id="admin-tab" class="tab-view">
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="adminCreateInvite">Create account &amp; invitation</h2>
+            <p class="admin-intro" data-i18n="adminIntro">Fill in the business details and set a password for the invitee. Then generate a link to share via email or WhatsApp. When they open the link, they will get this business profile and login with the password you set.</p>
+            <div class="field-group">
+              <label data-i18n="adminInviteeName">Invitee name</label>
+              <input type="text" id="invitee-name" placeholder="Contact or business name">
+            </div>
+            <div class="field-group">
+              <label data-i18n="adminInviteePassword">Password for invitee</label>
+              <input type="password" id="invitee-password" placeholder="">
+            </div>
+            <div class="field-group">
+              <label>Company Name</label>
+              <input type="text" id="invite-company-name" placeholder="Business / company name">
+            </div>
+            <div class="field-group">
+              <label>Address</label>
+              <textarea id="invite-company-address" rows="2" placeholder="Address"></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label>Phone</label>
+                <input type="text" id="invite-company-phone" placeholder="">
+              </div>
+              <div class="field-group">
+                <label>Email</label>
+                <input type="email" id="invite-company-email" placeholder="">
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Bank Details</label>
+              <textarea id="invite-company-bank" rows="2" placeholder="Bank name, account, branch"></textarea>
+            </div>
+            <div class="field-group">
+              <label>Currency</label>
+              <select id="invite-company-currency">
+                <option value="USD">US Dollar (USD)</option>
+                <option value="TZS">Tanzanian Shilling (TZS)</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Dealers in / Tagline</label>
+              <input type="text" id="invite-company-dealers" placeholder="">
+            </div>
+            <div class="field-group">
+              <label for="invite-company-logo" data-i18n="companyLogo">Company Logo</label>
+              <input type="file" id="invite-company-logo" accept="image/*">
+              <span id="invite-logo-filename" class="invite-logo-filename" aria-live="polite"></span>
+              <span id="invite-logo-hint" class="field-hint">Logo will be uploaded to Cloudinary and included in the invite link.</span>
+            </div>
+            <button type="button" id="admin-generate-invite" class="btn primary full-width" data-i18n="adminGenerateLink">Generate invitation link</button>
+            <div id="admin-invite-result" class="admin-invite-result" style="display:none;">
+              <label data-i18n="adminInviteLink">Invitation link (share with invitee)</label>
+              <div class="admin-invite-actions">
+                <input type="text" id="admin-invite-url" readonly class="admin-invite-url">
+                <button type="button" id="admin-copy-link" class="btn secondary small" data-i18n="adminCopyLink">Copy link</button>
+                <a id="admin-share-wa" href="#" target="_blank" rel="noopener" class="btn success small" data-i18n="adminShareWhatsApp">Share via WhatsApp</a>
+              </div>
+            </div>
+          </section>
+        </div>
       </section>
     </main>
   </div>
 
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPQyoS9iY1sH4Jzdd1zM53EGvmeq2P087amS+o566hdSYG+E4BJ0bG0VxZgNihICv16uGm2vqzYViPqXw/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js" integrity="sha512-cOH+3g1fTvU6S3s2nMqJkwbw69Q3Tt0u04+2fL1W+SlRwrysEmn2n42pEsF3w0bL5e1qQ5N8DgE0GgA5NPxOw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="app.js"></script>
 </body>
 </html>

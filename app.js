@@ -1,4 +1,5 @@
-// TradePilotAI Document Generator - Vanilla JS
+// TradePilotAI Document Generator - Vanilla JS (invite fix v2024-03)
+(function () { try { window.__tpaiInviteSearch = window.location.search || ""; } catch (e) {} })();
 
 const STORAGE_KEYS = {
   COMPANY: "tpai_company_profile",
@@ -11,6 +12,55 @@ const USER_STORAGE_KEYS = {
   CURRENT_USER: "tpai_current_user_id",
 };
 const LANG_STORAGE = "tpai_lang"; // "en" | "sw"
+
+// Base URL for invitation links (short, trusted domain). Fallback to current origin if not set.
+const INVITE_BASE_URL = "https://tradepilotai.zanzibaba.com";
+
+// Cloudinary: upload invitee logo to cloud so invite link opens with logo. Settings > Upload > Add upload preset (unsigned).
+const CLOUDINARY_CLOUD_NAME = "dn6aezjpa";
+const CLOUDINARY_UPLOAD_PRESET = "tpai_logo";
+
+function base64EncodeUtf8(str) {
+  try {
+    return btoa(unescape(encodeURIComponent(str)));
+  } catch (e) {
+    return btoa(str);
+  }
+}
+function base64DecodeUtf8(base64) {
+  try {
+    return decodeURIComponent(escape(atob(base64)));
+  } catch (e) {
+    return atob(base64) || "";
+  }
+}
+
+function getCompanyLogoSource(company) {
+  if (!company) return FALLBACK_LOGO_DATA_URL;
+  if (company.logoUrl) return company.logoUrl;
+  if (company.logoDataUrl) return company.logoDataUrl;
+  return FALLBACK_LOGO_DATA_URL;
+}
+
+function uploadImageToCloudinary(dataUrl) {
+  const cloudName = (typeof CLOUDINARY_CLOUD_NAME !== "undefined" && CLOUDINARY_CLOUD_NAME) ? CLOUDINARY_CLOUD_NAME.trim() : "";
+  const preset = (typeof CLOUDINARY_UPLOAD_PRESET !== "undefined" && CLOUDINARY_UPLOAD_PRESET) ? CLOUDINARY_UPLOAD_PRESET.trim() : "";
+  if (!cloudName || !preset) return Promise.resolve(null);
+  if (!dataUrl || !dataUrl.startsWith("data:image/")) return Promise.resolve(null);
+  const form = new FormData();
+  form.append("file", dataUrl);
+  form.append("upload_preset", preset);
+  return fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: "POST",
+    body: form,
+  })
+    .then((r) => r.json())
+    .then((res) => (res.secure_url || res.url) || null)
+    .catch(() => null);
+}
+
+// Only the person who knows this code can become admin (mmiliki wa mfumo).
+const ADMIN_CODE = "viola1358";
 
 const DEFAULT_TERMS =
   "Payment due within agreed period\nPrice subject to change depending on shipment conditions";
@@ -109,6 +159,13 @@ function formatMoney(value, currency) {
     maximumFractionDigits: 2,
   });
   return currency ? `${currency} ${formatted}` : formatted;
+}
+
+function getDocumentCurrency() {
+  const sel = document.getElementById("document-currency");
+  if (sel && sel.value) return sel.value;
+  const company = getCurrentCompany();
+  return (company && company.currency) || "TZS";
 }
 
 function numberToWords(n) {
@@ -280,12 +337,33 @@ const I18N = {
     authContinue: "Continue",
     authEnterPassword: "Enter your password",
     authUnlock: "Unlock",
+    authAdminCode: "Admin code (optional – for system owner only)",
     navCreate: "Create Document",
     createNewDoc: "Create New Document",
+    newDocument: "New document",
     navHistory: "History",
     navSettings: "Settings",
+    navAdmin: "Admin",
     companySettings: "Company Settings",
+    accountTitle: "Your account",
+    accountName: "Your name",
+    accountCurrentPassword: "Current password",
+    accountNewPassword: "New password",
+    accountConfirmPassword: "Confirm new password",
+    accountUpdate: "Update account",
+    adminCreateInvite: "Create account & invitation",
+    adminIntro: "Fill in the business details and set a password for the invitee. Then generate a link to share via email or WhatsApp.",
+    adminInviteeName: "Invitee name",
+    adminInviteePassword: "Password for invitee",
+    adminGenerateLink: "Generate invitation link",
+    adminInviteLink: "Invitation link (share with invitee)",
+    adminCopyLink: "Copy link",
+    adminShareWhatsApp: "Share via WhatsApp",
+    companyLogo: "Company Logo",
+    inviteLogoHint: "Set CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET in app.js to upload logo so the invite link opens with logo.",
+    inviteLogoHintReady: "Logo will be uploaded to Cloudinary and included in the invite link.",
     documentOptions: "Document Options",
+    documentCurrency: "Currency for this document",
     preparedBy: "Prepared By",
     actions: "Actions",
     print: "Print",
@@ -320,12 +398,33 @@ const I18N = {
     authContinue: "Endelea",
     authEnterPassword: "Ingiza nenosiri lako",
     authUnlock: "Fungua",
+    authAdminCode: "Msimamizi code (si lazima – kwa mmiliki wa mfumo tu)",
     navCreate: "Tengeneza Hati",
     createNewDoc: "Tengeneza Hati Mpya",
+    newDocument: "Hati mpya",
     navHistory: "Historia",
     navSettings: "Mipangilio",
+    navAdmin: "Msimamizi",
     companySettings: "Mipangilio ya Kampuni",
+    accountTitle: "Akaunti yako",
+    accountName: "Jina lako",
+    accountCurrentPassword: "Nenosiri la sasa",
+    accountNewPassword: "Nenosiri jipya",
+    accountConfirmPassword: "Thibitisha nenosiri jipya",
+    accountUpdate: "Sasisha akaunti",
+    adminCreateInvite: "Unda akaunti na mialiko",
+    adminIntro: "Jaza maelezo ya biashara na weka nenosiri kwa mgeni. Kisha tengeneza kiungo cha kushiriki kwa barua pepe au WhatsApp.",
+    adminInviteeName: "Jina la mgeni",
+    adminInviteePassword: "Nenosiri kwa mgeni",
+    adminGenerateLink: "Tengeneza kiungo cha mialiko",
+    adminInviteLink: "Kiungo cha mialiko (shiriki na mgeni)",
+    adminCopyLink: "Nakili kiungo",
+    adminShareWhatsApp: "Shiriki kwa WhatsApp",
+    companyLogo: "Logo ya Kampuni",
+    inviteLogoHint: "Weka CLOUDINARY_CLOUD_NAME na CLOUDINARY_UPLOAD_PRESET kwenye app.js ili kupakia logo; kiungo kitafungua na logo.",
+    inviteLogoHintReady: "Logo itapakiwa kwenye Cloudinary na kujumuishwa kwenye kiungo cha mialiko.",
     documentOptions: "Chaguo za Hati",
+    documentCurrency: "Sarafu ya hati hii",
     preparedBy: "Imetayarishwa na",
     actions: "Vitendo",
     print: "Print",
@@ -382,6 +481,138 @@ function updateDocumentFromLabel() {
   el.textContent = from ? `${label}: ${from}` : "";
 }
 
+function updateHeaderBrand() {
+  const company = getCurrentCompany();
+  const titleEl = document.getElementById("header-company-name");
+  const taglineEl = document.getElementById("header-company-tagline");
+  const logoEl = document.getElementById("brand-logo-trigger");
+  if (titleEl) {
+    titleEl.textContent = (company && company.name) ? company.name : "TradePilotAI Document Studio";
+  }
+  if (taglineEl) {
+    taglineEl.textContent = (company && company.dealers) ? company.dealers : "Smart business document automation";
+  }
+  if (logoEl && company && company.name) {
+    const words = company.name.trim().split(/\s+/);
+    const initials = words.length >= 2
+      ? (words[0][0] + words[1][0]).toUpperCase()
+      : (company.name.slice(0, 2) || "TP").toUpperCase();
+    logoEl.textContent = initials;
+  } else if (logoEl) {
+    logoEl.textContent = "TP";
+  }
+}
+
+function isCurrentUserAdmin() {
+  const u = getSimpleUser();
+  return !!(u && u.isAdmin);
+}
+
+function checkInviteLink(readyCallback) {
+  const search = (window.__tpaiInviteSearch != null ? window.__tpaiInviteSearch : window.location.search || "").replace(/^\?/, "?");
+  const shortPayload = new URLSearchParams(search).get("i");
+  let legacyPayload = null;
+  const inviteMatch = search.match(/[?&]invite=([^&]+)/);
+  if (inviteMatch && inviteMatch[1]) {
+    try {
+      legacyPayload = decodeURIComponent(inviteMatch[1]);
+    } catch (e) {
+      legacyPayload = inviteMatch[1];
+    }
+    if (legacyPayload.indexOf(" ") !== -1) legacyPayload = legacyPayload.replace(/ /g, "+");
+  }
+  let data = null;
+  if (shortPayload && typeof LZString !== "undefined" && LZString.decompressFromEncodedURIComponent) {
+    try {
+      const jsonStr = LZString.decompressFromEncodedURIComponent(shortPayload);
+      if (jsonStr) data = JSON.parse(jsonStr);
+    } catch (e) { /* ignore */ }
+  }
+  if (!data && legacyPayload) {
+    try {
+      data = JSON.parse(base64DecodeUtf8(legacyPayload));
+    } catch (e1) {
+      try {
+        data = JSON.parse(atob(legacyPayload));
+      } catch (e2) {
+        try {
+          let fixed = legacyPayload.replace(/-/g, "+").replace(/_/g, "/");
+          while (fixed.length % 4) fixed += "=";
+          data = JSON.parse(atob(fixed));
+        } catch (e3) { /* ignore */ }
+      }
+    }
+  }
+  const hasInviteParam = !!(shortPayload || legacyPayload);
+  if (!data || !data.companyProfile || !data.password) {
+    if (hasInviteParam) {
+      showInvalidInviteOverlay(readyCallback);
+      return true;
+    }
+    return false;
+  }
+  try {
+    let overlay = document.getElementById("auth-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "auth-overlay";
+      document.body.appendChild(overlay);
+    }
+    const companyName = (data.companyProfile.name || "").trim() || "this business";
+    overlay.innerHTML = `
+      <div class="auth-overlay-backdrop"></div>
+      <div class="auth-dialog">
+        <h2>${currentLang() === "sw" ? "Mialiko" : "Invitation"}</h2>
+        <p class="auth-intro">${currentLang() === "sw"
+      ? `Umekaribishwa kutumia TradePilotAI na ${companyName}. Nenosiri limewekwa na msimamizi. Bofya Kubali kuanza.`
+      : `You're invited to use TradePilotAI with ${companyName}. Your password was set by your admin. Click Accept to get started.`}</p>
+        <div class="auth-form">
+          <button id="invite-accept" class="btn primary full-width">${currentLang() === "sw" ? "Kubali" : "Accept"}</button>
+        </div>
+      </div>
+    `;
+    document.getElementById("invite-accept").addEventListener("click", () => {
+      saveSimpleUser({ name: (data.inviteeName || data.companyProfile.name || "User").trim() || "User", password: data.password, isAdmin: false });
+      setCurrentUserId("default");
+      saveJSON(getScopedKey(STORAGE_KEYS.COMPANY), { ...DEFAULT_COMPANY, ...data.companyProfile });
+      overlay.remove();
+      window.history.replaceState({}, "", window.location.pathname + (window.location.hash || ""));
+      if (typeof readyCallback === "function") readyCallback();
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function showInvalidInviteOverlay(readyCallback) {
+  let overlay = document.getElementById("auth-overlay");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.id = "auth-overlay";
+    document.body.appendChild(overlay);
+  }
+  const isSw = currentLang() === "sw";
+  overlay.innerHTML = `
+    <div class="auth-overlay-backdrop"></div>
+    <div class="auth-dialog">
+      <h2>${isSw ? "Mialiko" : "Invitation"}</h2>
+      <p class="auth-intro">${isSw
+    ? "Kiungo hiki ni cha mialiko lakini hakijaweza kusomwa (labda kimekatwa). Tafadhali omba kiungo kipya kutoka kwa msimamizi wako, au fungua kiungo kamili bila kukikati."
+    : "This is an invitation link but it could not be loaded (the link may be incomplete or cut off). Please ask your admin for a new link or open the full link without copying it short."}</p>
+      <div class="auth-form">
+        <button id="invite-invalid-dismiss" class="btn primary full-width">${isSw ? "Sawa" : "OK"}</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("invite-invalid-dismiss").addEventListener("click", () => {
+    overlay.remove();
+    window.history.replaceState({}, "", window.location.pathname + (window.location.hash || ""));
+    if (typeof readyCallback === "function") readyCallback();
+  });
+}
+
+
 function initAuth(readyCallback) {
   setCurrentUserId(null); // every new open asks for password
   const simpleUser = getSimpleUser();
@@ -420,7 +651,7 @@ function initAuth(readyCallback) {
         alert(currentLang() === "sw" ? "Tafadhali weka nenosiri." : "Please enter a password.");
         return;
       }
-      saveSimpleUser({ name: name || "User", password });
+      saveSimpleUser({ name: name || "User", password, isAdmin: false });
       setCurrentUserId("default");
       overlay.remove();
       if (typeof readyCallback === "function") readyCallback();
@@ -478,6 +709,192 @@ function initTabs() {
   });
 }
 
+function updateAdminTabVisibility() {
+  const adminTab = document.querySelector(".nav-tab[data-tab=\"admin-tab\"]");
+  if (adminTab) adminTab.style.display = isCurrentUserAdmin() ? "" : "none";
+}
+
+function initAccountPanel() {
+  const nameEl = document.getElementById("account-name");
+  const currentEl = document.getElementById("account-current-password");
+  const newEl = document.getElementById("account-new-password");
+  const confirmEl = document.getElementById("account-confirm-password");
+  const btn = document.getElementById("account-update-btn");
+  if (!nameEl || !btn) return;
+
+  const u = getSimpleUser();
+  if (u) nameEl.value = u.name || "";
+
+  btn.addEventListener("click", () => {
+    const current = (currentEl?.value || "").trim();
+    const newPwd = (newEl?.value || "").trim();
+    const confirm = (confirmEl?.value || "").trim();
+    const newName = (nameEl.value || "").trim();
+    const user = getSimpleUser();
+    if (!user) return;
+
+    if (current !== (user.password || "")) {
+      alert(currentLang() === "sw" ? "Nenosiri la sasa si sahihi." : "Current password is wrong.");
+      return;
+    }
+    if (newPwd && newPwd !== confirm) {
+      alert(currentLang() === "sw" ? "Nenosiri jipya na uthibitisho haulingani." : "New password and confirm do not match.");
+      return;
+    }
+    const nextPassword = newPwd || user.password;
+    saveSimpleUser({
+      name: newName || user.name || "User",
+      password: nextPassword,
+      isAdmin: !!user.isAdmin,
+    });
+    if (currentEl) currentEl.value = "";
+    if (newEl) newEl.value = "";
+    if (confirmEl) confirmEl.value = "";
+    alert(currentLang() === "sw" ? "Akaunti imesasishwa." : "Account updated.");
+  });
+}
+
+// Secret: click logo 7 times to unlock admin (mmiliki wa mfumo only)
+const ADMIN_SECRET_CLICKS = 7;
+const ADMIN_SECRET_WINDOW_MS = 3000;
+
+function initAdminSecret() {
+  const logo = document.getElementById("brand-logo-trigger");
+  if (!logo) return;
+  let count = 0;
+  let timer = null;
+  logo.addEventListener("click", () => {
+    count++;
+    if (timer) clearTimeout(timer);
+    if (count >= ADMIN_SECRET_CLICKS) {
+      count = 0;
+      const code = prompt(currentLang() === "sw" ? "Ingiza nenosiri la msimamizi:" : "Enter admin password:");
+      if (code === null) return;
+      if ((code || "").trim() === ADMIN_CODE) {
+        const u = getSimpleUser();
+        if (u) {
+          saveSimpleUser({ ...u, isAdmin: true });
+          updateAdminTabVisibility();
+        }
+      }
+      return;
+    }
+    timer = setTimeout(() => { count = 0; }, ADMIN_SECRET_WINDOW_MS);
+  });
+}
+
+function initAdminPanel() {
+  if (!isCurrentUserAdmin()) return;
+  const btn = document.getElementById("admin-generate-invite");
+  const resultEl = document.getElementById("admin-invite-result");
+  const urlInput = document.getElementById("admin-invite-url");
+  const copyBtn = document.getElementById("admin-copy-link");
+  const waBtn = document.getElementById("admin-share-wa");
+  const logoInput = document.getElementById("invite-company-logo");
+  const logoFilenameEl = document.getElementById("invite-logo-filename");
+  if (!btn || !resultEl || !urlInput) return;
+
+  const hintEl = document.getElementById("invite-logo-hint");
+  if (hintEl) {
+    const cloudSet = (typeof CLOUDINARY_CLOUD_NAME !== "undefined" && CLOUDINARY_CLOUD_NAME && typeof CLOUDINARY_UPLOAD_PRESET !== "undefined" && CLOUDINARY_UPLOAD_PRESET);
+    hintEl.textContent = cloudSet
+      ? (I18N[currentLang()] && I18N[currentLang()].inviteLogoHintReady) || "Logo will be uploaded to Cloudinary and included in the invite link."
+      : (I18N[currentLang()] && I18N[currentLang()].inviteLogoHint) || "Set CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET in app.js.";
+  }
+
+  let adminInviteLogoUrl = null;
+  if (logoInput) {
+    logoInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      adminInviteLogoUrl = null;
+      if (logoFilenameEl) logoFilenameEl.textContent = "";
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        if (logoFilenameEl) logoFilenameEl.textContent = currentLang() === "sw" ? "Chagua picha tu." : "Please choose an image.";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const dataUrl = reader.result;
+        if (logoFilenameEl) logoFilenameEl.textContent = currentLang() === "sw" ? "Inapakia…" : "Uploading…";
+        const link = await uploadImageToCloudinary(dataUrl);
+        adminInviteLogoUrl = link || null;
+        if (logoFilenameEl) {
+          if (link) logoFilenameEl.textContent = currentLang() === "sw" ? file.name + " ✓ (wamepakiwa)" : file.name + " ✓ (uploaded)";
+          else logoFilenameEl.textContent = file.name + (currentLang() === "sw" ? " (tunaweka tu jina)" : " (name only)");
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  btn.addEventListener("click", () => {
+    const inviteeName = (document.getElementById("invitee-name")?.value || "").trim();
+    const inviteePassword = (document.getElementById("invitee-password")?.value || "").trim();
+    if (!inviteePassword) {
+      alert(currentLang() === "sw" ? "Weka nenosiri kwa mgeni." : "Set a password for the invitee.");
+      return;
+    }
+    const companyProfile = {
+      name: (document.getElementById("invite-company-name")?.value || "").trim() || "My Business",
+      address: (document.getElementById("invite-company-address")?.value || "").trim(),
+      phone: (document.getElementById("invite-company-phone")?.value || "").trim(),
+      email: (document.getElementById("invite-company-email")?.value || "").trim(),
+      bankDetails: (document.getElementById("invite-company-bank")?.value || "").trim(),
+      currency: (document.getElementById("invite-company-currency")?.value || "").trim(),
+      dealers: (document.getElementById("invite-company-dealers")?.value || "").trim(),
+      sector: "generic",
+      website: "",
+      socials: "",
+      logoDataUrl: null,
+      logoUrl: adminInviteLogoUrl || undefined,
+      extraFields: [],
+    };
+    const payload = { companyProfile, password: inviteePassword, inviteeName: inviteeName || companyProfile.name };
+    const base = (typeof INVITE_BASE_URL !== "undefined" && INVITE_BASE_URL)
+      ? INVITE_BASE_URL.replace(/\/$/, "")
+      : (window.location.origin + window.location.pathname).replace(/\/$/, "");
+    const jsonStr = JSON.stringify(payload);
+    let inviteParam;
+    let inviteUrl;
+    if (typeof LZString !== "undefined" && LZString.compressToEncodedURIComponent) {
+      inviteParam = LZString.compressToEncodedURIComponent(jsonStr);
+      inviteUrl = `${base}/?i=${inviteParam}`;
+    } else {
+      inviteParam = encodeURIComponent(base64EncodeUtf8(jsonStr));
+      inviteUrl = `${base}/?invite=${inviteParam}`;
+    }
+    urlInput.value = inviteUrl;
+    resultEl.style.display = "block";
+    if (waBtn) {
+      const text = currentLang() === "sw"
+        ? `Karibu kutumia TradePilotAI. Wasifu wa biashara yako umeandaliwa. Fungua kiungo hiki na weka nenosiri lako: ${inviteePassword}`
+        : `You're invited to use TradePilotAI. Your business profile is ready. Open this link and use password: ${inviteePassword}`;
+      waBtn.href = `https://wa.me/?text=${encodeURIComponent(text + "\n\n" + inviteUrl)}`;
+    }
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    const url = urlInput.value;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        urlInput.select();
+        document.execCommand("copy");
+      }
+      copyBtn.textContent = currentLang() === "sw" ? "Imenakiliwa!" : "Copied!";
+    } catch (e) {
+      urlInput.select();
+      document.execCommand("copy");
+      copyBtn.textContent = currentLang() === "sw" ? "Imenakiliwa!" : "Copied!";
+    }
+    setTimeout(() => { copyBtn.textContent = (I18N[currentLang()] && I18N[currentLang()].adminCopyLink) || "Copy link"; }, 1500);
+  });
+
+  if (waBtn) waBtn.setAttribute("target", "_blank");
+}
+
 function goToCreateDocument(resetForm) {
   const createTabBtn = document.querySelector('.nav-tab[data-tab="create-tab"]');
   if (createTabBtn) {
@@ -504,6 +921,11 @@ function goToCreateDocument(resetForm) {
   const letterPrompt = document.getElementById("letter-ai-prompt");
   if (letterBody) letterBody.value = "";
   if (letterPrompt) letterPrompt.value = "";
+  const docCurrencyEl = document.getElementById("document-currency");
+  if (docCurrencyEl) {
+    const company = getCurrentCompany();
+    docCurrencyEl.value = (company && company.currency) || "TZS";
+  }
   const tbody = document.getElementById("items-body");
   if (tbody && typeof window._tpaiAddItemRow === "function") {
     tbody.innerHTML = "";
@@ -636,13 +1058,13 @@ function initCompanySettings() {
       bankEl.textContent = company.bankDetails || "";
     }
 
-    if (company.logoDataUrl) {
-      logoEl.src = company.logoDataUrl;
-    } else {
-      // Fallback to vector logo; keep PNG path as a hint but override visually
-      logoEl.src = FALLBACK_LOGO_DATA_URL;
+    logoEl.src = getCompanyLogoSource(company);
+    const watermarkLogo = document.getElementById("watermark-logo");
+    if (watermarkLogo) {
+      watermarkLogo.src = getCompanyLogoSource(company);
     }
     if (typeof updateDocumentFromLabel === "function") updateDocumentFromLabel();
+    if (typeof updateHeaderBrand === "function") updateHeaderBrand();
   }
 
   // Fill inputs & preview initially
@@ -656,7 +1078,7 @@ function initCompanySettings() {
     company = {
       ...company,
       // For saved profile, respect empty values so fields can be hidden
-      name: nameInput.value.trim() || DEFAULT_COMPANY.name,
+      name: (nameInput.value.trim() || DEFAULT_COMPANY.name),
       address: addressInput.value.trim() || DEFAULT_COMPANY.address,
       phone: phoneInput.value.trim(),
       email: emailInput.value.trim(),
@@ -670,6 +1092,7 @@ function initCompanySettings() {
     saveCompanyProfile(company);
     applyCompanyToPreview();
     renderExtraList();
+    if (typeof updateHeaderBrand === "function") updateHeaderBrand();
     alert("Company profile saved in this browser.");
   });
 
@@ -680,6 +1103,7 @@ function initCompanySettings() {
     applyCompanyToForm();
     applyCompanyToPreview();
     renderExtraList();
+    if (typeof updateHeaderBrand === "function") updateHeaderBrand();
   });
 
   logoUpload.addEventListener("change", (e) => {
@@ -874,6 +1298,13 @@ function initDocumentBasics() {
     updateDocMeta();
   });
 
+  const docCurrencySelect = document.getElementById("document-currency");
+  if (docCurrencySelect) {
+    const company = getCurrentCompany();
+    if (company && company.currency) docCurrencySelect.value = company.currency;
+    docCurrencySelect.addEventListener("change", () => updateItemsTotals());
+  }
+
   // Expose some helpers globally for save/metadata
   window._tpaiGetDocMeta = () => ({
     typeKey: typeSelect.value,
@@ -1053,7 +1484,7 @@ function renumberRows() {
 
 function updateItemsTotals() {
   const tbody = document.getElementById("items-body");
-  const company = getCurrentCompany();
+  const docCurrency = getDocumentCurrency();
   let subtotal = 0;
 
   const previewBody = document.getElementById("doc-items-body");
@@ -1068,7 +1499,7 @@ function updateItemsTotals() {
 
     const totalInput = row.querySelector(".item-total-cell");
     if (totalInput) {
-      totalInput.value = lineTotal ? formatMoney(lineTotal, company.currency) : "";
+      totalInput.value = lineTotal ? formatMoney(lineTotal, docCurrency) : "";
     }
 
     const previewRow = document.createElement("tr");
@@ -1076,8 +1507,8 @@ function updateItemsTotals() {
       <td>${i + 1}</td>
       <td>${desc || ""}</td>
       <td>${qty ? qty.toFixed(2) : ""}</td>
-      <td>${unit ? formatMoney(unit, company.currency) : ""}</td>
-      <td>${lineTotal ? formatMoney(lineTotal, company.currency) : ""}</td>
+      <td>${unit ? formatMoney(unit, docCurrency) : ""}</td>
+      <td>${lineTotal ? formatMoney(lineTotal, docCurrency) : ""}</td>
     `;
     previewBody.appendChild(previewRow);
 
@@ -1105,40 +1536,40 @@ function updateItemsTotals() {
 
   document.getElementById("subtotal-display").textContent = formatMoney(
     subtotal,
-    company.currency
+    docCurrency
   );
   const discountDisplay = document.getElementById("discount-display");
   if (discountDisplay) {
     discountDisplay.textContent = discountAmount
-      ? "-" + formatMoney(discountAmount, company.currency)
-      : formatMoney(0, company.currency);
+      ? "-" + formatMoney(discountAmount, docCurrency)
+      : formatMoney(0, docCurrency);
   }
   document.getElementById("vat-display").textContent = formatMoney(
     vat,
-    company.currency
+    docCurrency
   );
   document.getElementById("grand-total-display").textContent = formatMoney(
     grand,
-    company.currency
+    docCurrency
   );
 
   document.getElementById("doc-subtotal").textContent = formatMoney(
     subtotal,
-    company.currency
+    docCurrency
   );
   const docDiscountEl = document.getElementById("doc-discount");
   if (docDiscountEl) {
     docDiscountEl.textContent = discountAmount
-      ? "-" + formatMoney(discountAmount, company.currency)
+      ? "-" + formatMoney(discountAmount, docCurrency)
       : "";
   }
   document.getElementById("doc-vat").textContent = formatMoney(
     vat,
-    company.currency
+    docCurrency
   );
   document.getElementById("doc-grand-total").textContent = formatMoney(
     grand,
-    company.currency
+    docCurrency
   );
 
   const words = grand ? amountToWords(grand) : "";
@@ -1313,6 +1744,7 @@ function captureDocumentState() {
     document.getElementById("discount-rate")?.value || "0";
   const letterBody = document.getElementById("letter-body")?.value || "";
   const letterPrompt = document.getElementById("letter-ai-prompt")?.value || "";
+  const documentCurrency = getDocumentCurrency();
 
   return {
     meta,
@@ -1324,6 +1756,7 @@ function captureDocumentState() {
     discountRate,
     letterBody,
     letterPrompt,
+    documentCurrency,
   };
 }
 
@@ -1371,6 +1804,11 @@ function applyDocumentState(state, duplicate = false) {
   const promptInput = document.getElementById("letter-ai-prompt");
   if (bodyInput) bodyInput.value = state.letterBody || "";
   if (promptInput) promptInput.value = state.letterPrompt || "";
+
+  const docCurrencyEl = document.getElementById("document-currency");
+  if (docCurrencyEl && state.documentCurrency) {
+    docCurrencyEl.value = state.documentCurrency;
+  }
 
   // Trigger bindings to refresh preview/totals
   updateItemsTotals();
@@ -1434,7 +1872,7 @@ function initActions() {
       totalFormatted: grandDisplay,
       filename,
       savedAt: new Date().toISOString(),
-      currency: company.currency,
+      currency: getDocumentCurrency(),
       state: captureDocumentState(),
     };
 
@@ -1585,31 +2023,39 @@ function initLangToggle() {
   });
 }
 
+function fullInit() {
+  initTabs();
+  initCompanySettings();
+  initDocumentBasics();
+  initClientBindings();
+  initPreparedByBindings();
+  initTerms();
+  initItemsTable();
+  initActions();
+  renderHistory();
+  initLangToggle();
+  applyLanguage();
+  if (typeof updateHeaderBrand === "function") updateHeaderBrand();
+  updateAdminTabVisibility();
+  initAccountPanel();
+  initAdminPanel();
+  initAdminSecret();
+
+  const btnNewDoc = document.getElementById("btn-new-document");
+  if (btnNewDoc) {
+    btnNewDoc.addEventListener("click", () => goToCreateDocument(true));
+  }
+
+  const searchInput = document.getElementById("history-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      renderHistory(searchInput.value);
+    });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  initAuth(() => {
-    initTabs();
-    initCompanySettings();
-    initDocumentBasics();
-    initClientBindings();
-    initPreparedByBindings();
-    initTerms();
-    initItemsTable();
-    initActions();
-    renderHistory();
-    initLangToggle();
-    applyLanguage();
-
-    const btnCreateNew = document.getElementById("btn-create-new-doc");
-    if (btnCreateNew) {
-      btnCreateNew.addEventListener("click", () => goToCreateDocument(true));
-    }
-
-    const searchInput = document.getElementById("history-search");
-    if (searchInput) {
-      searchInput.addEventListener("input", () => {
-        renderHistory(searchInput.value);
-      });
-    }
-  });
+  if (checkInviteLink(fullInit)) return;
+  initAuth(fullInit);
 });
 
