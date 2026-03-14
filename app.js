@@ -1914,6 +1914,52 @@ function deleteHistoryEntry(id) {
   renderHistory(document.getElementById("history-search")?.value || "");
 }
 
+function initPrintFit() {
+  var wrapper = document.getElementById("document-preview-wrapper");
+  var el = document.getElementById("document-preview");
+  if (!wrapper || !el) return;
+  var origWidth = "", origHeight = "", origMaxWidth = "", origTransform = "", origTransformOrigin = "";
+  var origWrapperWidth = "", origWrapperHeight = "", origWrapperOverflow = "";
+
+  window.addEventListener("beforeprint", function () {
+    if (!el || !wrapper) return;
+    var m = 12;
+    var a4W = 210 - 2 * m;
+    var a4H = 297 - 2 * m;
+    var a4Wpx = (a4W / 25.4) * 96;
+    var a4Hpx = (a4H / 25.4) * 96;
+    var w = el.scrollWidth || el.offsetWidth;
+    var h = el.scrollHeight || el.offsetHeight;
+    if (w <= 0 || h <= 0) return;
+    origWidth = el.style.width || "";
+    origHeight = el.style.height || "";
+    origMaxWidth = el.style.maxWidth || "";
+    origTransform = el.style.transform || "";
+    origTransformOrigin = el.style.transformOrigin || "";
+    origWrapperWidth = wrapper.style.width || "";
+    origWrapperHeight = wrapper.style.height || "";
+    origWrapperOverflow = wrapper.style.overflow || "";
+    var scale = Math.min(1, a4Wpx / w, a4Hpx / h);
+    el.style.transformOrigin = "top left";
+    el.style.transform = "scale(" + scale + ")";
+    wrapper.style.width = Math.ceil(w * scale) + "px";
+    wrapper.style.height = Math.ceil(h * scale) + "px";
+    wrapper.style.overflow = "hidden";
+  });
+
+  window.addEventListener("afterprint", function () {
+    if (!el || !wrapper) return;
+    el.style.width = origWidth;
+    el.style.height = origHeight;
+    el.style.maxWidth = origMaxWidth;
+    el.style.transform = origTransform;
+    el.style.transformOrigin = origTransformOrigin;
+    wrapper.style.width = origWrapperWidth;
+    wrapper.style.height = origWrapperHeight;
+    wrapper.style.overflow = origWrapperOverflow;
+  });
+}
+
 function initActions() {
   const printBtn = document.getElementById("print-document");
   const downloadBtn = document.getElementById("download-pdf");
