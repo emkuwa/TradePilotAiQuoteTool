@@ -834,7 +834,6 @@ function initAdminSecret() {
 }
 
 function initAdminPanel() {
-  if (!isCurrentUserAdmin()) return;
   const btn = document.getElementById("admin-generate-invite");
   const resultEl = document.getElementById("admin-invite-result");
   const urlInput = document.getElementById("admin-invite-url");
@@ -843,6 +842,12 @@ function initAdminPanel() {
   const logoInput = document.getElementById("invite-company-logo");
   const logoFilenameEl = document.getElementById("invite-logo-filename");
   if (!btn || !resultEl || !urlInput) return;
+  if (!isCurrentUserAdmin()) {
+    btn.addEventListener("click", () => {
+      alert(currentLang() === "sw" ? "Hii ni kwa wasimamizi tu. Weka nenosiri la admin." : "This is for admins only. Enter the admin secret.");
+    });
+    return;
+  }
 
   const hintEl = document.getElementById("invite-logo-hint");
   if (hintEl) {
