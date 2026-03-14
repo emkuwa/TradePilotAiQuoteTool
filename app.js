@@ -2130,7 +2130,7 @@ function generatePdf(mode, filenameBase) {
       letterRendering: true,
       logging: false,
     },
-    jsPDF: { unit: "pt", format: "a4", orientation: "portrait", hotfixes: ["px_scaling"] },
+    jsPDF: { unit: "pt", format: [595.28, 841.89], orientation: "portrait", hotfixes: ["px_scaling"] },
     pagebreak: { mode: ["avoid-all"] },
   };
 
