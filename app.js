@@ -2094,6 +2094,8 @@ function generatePdf(mode, filenameBase) {
   const origMaxWidth = element.style.maxWidth || "";
   const origBoxShadow = element.style.boxShadow || "";
   const origOverflow = element.style.overflow || "";
+  const origParent = element.parentNode;
+  const origNextSibling = element.nextSibling;
 
   const overlay = document.createElement("div");
   overlay.id = "pdf-gen-overlay";
@@ -2107,15 +2109,12 @@ function generatePdf(mode, filenameBase) {
   var wrapper = document.createElement("div");
   wrapper.id = "pdf-page-wrapper";
   wrapper.style.cssText = "width:" + A4_WIDTH_PX + "px;box-sizing:border-box;padding:0 " + PDF_PADDING_PX + "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);";
-  var clone = element.cloneNode(true);
-  clone.id = "document-preview-pdf-clone";
-  clone.style.width = "100%";
-  clone.style.maxWidth = "100%";
-  clone.style.boxShadow = "none";
-  clone.style.overflow = "visible";
-  wrapper.appendChild(clone);
+  element.style.width = "100%";
+  element.style.maxWidth = "100%";
+  element.style.boxShadow = "none";
+  element.style.overflow = "visible";
+  wrapper.appendChild(element);
   overlay.appendChild(wrapper);
-  var pdfTarget = wrapper;
 
   var opt = {
     margin: 0,
@@ -2135,6 +2134,10 @@ function generatePdf(mode, filenameBase) {
   };
 
   function cleanup() {
+    if (element.parentNode === wrapper && origParent) {
+      if (origNextSibling) origParent.insertBefore(element, origNextSibling);
+      else origParent.appendChild(element);
+    }
     element.style.width = origWidth;
     element.style.maxWidth = origMaxWidth;
     element.style.boxShadow = origBoxShadow;
@@ -2147,7 +2150,7 @@ function generatePdf(mode, filenameBase) {
     if (mode === "blob") {
       return html2pdf()
         .set(opt)
-        .from(pdfTarget)
+        .from(wrapper)
         .outputPdf("blob")
         .then(function (blob) {
           cleanup();
@@ -2161,7 +2164,7 @@ function generatePdf(mode, filenameBase) {
     if (mode === "download" || mode === "save") {
       return html2pdf()
         .set(opt)
-        .from(pdfTarget)
+        .from(wrapper)
         .save()
         .then(cleanup)
         .catch(function (err) {
@@ -2171,7 +2174,7 @@ function generatePdf(mode, filenameBase) {
     }
   }
 
-  var imgs = clone.querySelectorAll("img");
+  var imgs = element.querySelectorAll("img");
   var loadPromises = Array.from(imgs).map(function (img) {
     return new Promise(function (resolve) {
       if (img.complete) resolve();
