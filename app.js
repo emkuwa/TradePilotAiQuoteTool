@@ -2201,10 +2201,22 @@ function generatePdf(mode, filenameBase) {
     });
   });
 
-  return Promise.all(loadPromises).then(runPdf).catch(function (err) {
-    cleanup();
-    throw err;
-  });
+  return Promise.all(loadPromises)
+    .then(function () {
+      return new Promise(function (resolve) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            fitElementToA4();
+            setTimeout(resolve, 100);
+          });
+        });
+      });
+    })
+    .then(runPdf)
+    .catch(function (err) {
+      cleanup();
+      throw err;
+    });
 }
 
 function initLangToggle() {
