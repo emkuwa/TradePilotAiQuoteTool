@@ -520,6 +520,7 @@ td select {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  flex-shrink: 0;
 }
 
 .company-logo {
@@ -561,6 +562,7 @@ td select {
   min-width: 160px;
   max-width: 160px;
   width: 160px;
+  flex-shrink: 0;
   background: #16a34a;
   border-radius: 0.75rem;
   padding: 8px 10px;
