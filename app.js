@@ -2157,6 +2157,8 @@ function generatePdf(mode, filenameBase) {
     element.style.maxWidth = origMaxWidth;
     element.style.boxShadow = origBoxShadow;
     element.style.overflow = origOverflow;
+    element.style.transform = origTransform;
+    element.style.transformOrigin = origTransformOrigin;
     if (wrapper && wrapper.parentNode) wrapper.remove();
     if (overlay && overlay.parentNode) overlay.remove();
   }
