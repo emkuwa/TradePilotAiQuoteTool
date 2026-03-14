@@ -1186,7 +1186,7 @@ td select {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 12mm;
   }
 
   body {
@@ -1225,10 +1225,16 @@ td select {
     border-radius: 0 !important;
     max-width: none !important;
     width: 210mm !important;
-    min-height: 297mm;
     padding: 32px 32px 40px !important;
     margin: 0 auto !important;
     background: white !important;
+  }
+
+  /* Watermark: very faint so it does not overlap or overpower text */
+  .watermark img {
+    max-width: 45% !important;
+    max-height: 45% !important;
+    opacity: 0.04 !important;
   }
 }
 
