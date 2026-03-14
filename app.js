@@ -2098,6 +2098,10 @@ function generatePdf(mode, filenameBase) {
   const overlay = document.createElement("div");
   overlay.id = "pdf-gen-overlay";
   overlay.style.cssText = "position:fixed;inset:0;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;z-index:99999;";
+  var statusEl = document.createElement("div");
+  statusEl.style.cssText = "position:absolute;top:1rem;left:50%;transform:translateX(-50%);font-size:1rem;color:#333;";
+  statusEl.textContent = "Generating PDF…";
+  overlay.appendChild(statusEl);
   document.body.appendChild(overlay);
 
   var wrapper = document.createElement("div");
