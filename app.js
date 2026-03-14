@@ -1126,6 +1126,12 @@ function initCompanySettings() {
     }
 
     logoEl.src = getCompanyLogoSource(company);
+    const brandEl = document.getElementById("doc-logo-brand");
+    if (brandEl) {
+      const name = (company.name || DEFAULT_COMPANY.name).trim();
+      brandEl.textContent = name || "";
+      brandEl.style.display = name ? "" : "none";
+    }
     const watermarkLogo = document.getElementById("watermark-logo");
     if (watermarkLogo) {
       watermarkLogo.src = getCompanyLogoSource(company);

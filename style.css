@@ -518,9 +518,11 @@ td select {
 
 .doc-logo-box {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: flex-start;
   flex-shrink: 0;
+  gap: 6px;
 }
 
 .company-logo {
@@ -528,6 +530,16 @@ td select {
   width: 140px;
   height: 140px;
   object-fit: contain;
+}
+
+.doc-logo-brand {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #16a34a;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .doc-company-text {
