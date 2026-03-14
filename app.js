@@ -2120,13 +2120,17 @@ function generatePdf(mode, filenameBase) {
   overlay.appendChild(wrapper);
 
   function fitElementToA4() {
+    var innerW = A4_WIDTH_PX - 2 * PDF_PADDING_PX;
     var innerH = A4_HEIGHT_PX - 2 * PDF_PADDING_PX;
     element.style.transformOrigin = "top left";
     element.style.transform = "";
-    if (element.scrollHeight > innerH) {
-      var scale = innerH / element.scrollHeight;
-      element.style.transform = "scale(" + scale + ")";
-    }
+    var w = element.scrollWidth;
+    var h = element.scrollHeight;
+    if (w <= 0 || h <= 0) return;
+    var scaleW = innerW / w;
+    var scaleH = innerH / h;
+    var scale = Math.min(1, scaleW, scaleH);
+    if (scale < 1) element.style.transform = "scale(" + scale + ")";
   }
 
   var opt = {
