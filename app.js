@@ -1956,14 +1956,9 @@ function initPrintFit() {
     origWrapperOverflow = wrapper.style.overflow || "";
     origWrapperDisplay = wrapper.style.display || "";
     var scale = Math.min(1, a4Wpx / w, a4Hpx / h);
-    /* Center scaled content so left/right margins stay equal (no larger right margin) */
+    /* Scale from center-top so left/right margins stay equal (no larger right margin) */
     el.style.transformOrigin = "center top";
-    if (scale < 1) {
-      var tx = (a4Wpx - w * scale) / 2;
-      el.style.transform = "translateX(" + tx + "px) scale(" + scale + ")";
-    } else {
-      el.style.transform = "";
-    }
+    el.style.transform = scale < 1 ? "scale(" + scale + ")" : "";
     wrapper.style.display = "flex";
     wrapper.style.justifyContent = "center";
     wrapper.style.width = Math.ceil(a4Wpx) + "px";
