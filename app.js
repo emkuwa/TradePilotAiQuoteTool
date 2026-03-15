@@ -2200,10 +2200,7 @@ function generatePdf(mode, filenameBase) {
     var scaleW = innerW / w;
     var scaleH = innerH / h;
     var scale = Math.min(1, scaleW, scaleH);
-    if (scale < 1) {
-      var tx = (innerW - w * scale) / 2;
-      element.style.transform = "translateX(" + tx + "px) scale(" + scale + ")";
-    }
+    if (scale < 1) element.style.transform = "scale(" + scale + ")";
   }
 
   var opt = {
