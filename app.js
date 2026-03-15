@@ -2157,12 +2157,9 @@ function generatePdf(mode, filenameBase) {
     .replace(/\s+/g, "-")
     .slice(0, 24)}.pdf`;
 
-  /* Exact A4 pt dimensions so PDF page and canvas match (no scaling distortion) */
-  const A4_W = 595.28;
-  const A4_H = 841.89;
-  const PDF_PADDING = 28;
-  const innerW = A4_W - 2 * PDF_PADDING;
-  const innerH = A4_H - 2 * PDF_PADDING;
+  const A4_WIDTH_PX = 595;
+  const A4_HEIGHT_PX = 842;
+  const PDF_PADDING_PX = 28;
   const origWidth = element.style.width || "";
   const origMaxWidth = element.style.maxWidth || "";
   const origBoxShadow = element.style.boxShadow || "";
@@ -2183,16 +2180,18 @@ function generatePdf(mode, filenameBase) {
 
   var wrapper = document.createElement("div");
   wrapper.id = "pdf-page-wrapper";
-  wrapper.style.cssText = "width:" + A4_W + "px;height:" + A4_H + "px;box-sizing:border-box;padding:" + PDF_PADDING + "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;display:flex;align-items:flex-start;justify-content:center;";
-  element.style.width = innerW + "px";
-  element.style.maxWidth = innerW + "px";
+  wrapper.style.cssText = "width:" + A4_WIDTH_PX + "px;height:" + A4_HEIGHT_PX + "px;box-sizing:border-box;padding:" + PDF_PADDING_PX + "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;";
+  element.style.width = (A4_WIDTH_PX - 2 * PDF_PADDING_PX) + "px";
+  element.style.maxWidth = (A4_WIDTH_PX - 2 * PDF_PADDING_PX) + "px";
   element.style.boxShadow = "none";
   element.style.overflow = "visible";
   wrapper.appendChild(element);
   overlay.appendChild(wrapper);
 
   function fitElementToA4() {
-    element.style.transformOrigin = "center top";
+    var innerW = A4_WIDTH_PX - 2 * PDF_PADDING_PX;
+    var innerH = A4_HEIGHT_PX - 2 * PDF_PADDING_PX;
+    element.style.transformOrigin = "top left";
     element.style.transform = "";
     var w = element.scrollWidth;
     var h = element.scrollHeight;
@@ -2208,8 +2207,8 @@ function generatePdf(mode, filenameBase) {
     filename: filename,
     image: { type: "png", quality: 1 },
     html2canvas: {
-      width: A4_W,
-      height: A4_H,
+      width: A4_WIDTH_PX,
+      height: A4_HEIGHT_PX,
       scale: 2,
       useCORS: true,
       allowTaint: true,
@@ -2218,7 +2217,7 @@ function generatePdf(mode, filenameBase) {
       letterRendering: true,
       logging: false,
     },
-    jsPDF: { unit: "pt", format: [A4_W, A4_H], orientation: "portrait", hotfixes: ["px_scaling"] },
+    jsPDF: { unit: "pt", format: [595.28, 841.89], orientation: "portrait", hotfixes: ["px_scaling"] },
     pagebreak: { mode: ["avoid-all"] },
   };
 
