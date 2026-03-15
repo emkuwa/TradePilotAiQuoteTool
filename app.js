@@ -1934,7 +1934,7 @@ function initPrintFit() {
   var el = document.getElementById("document-preview");
   if (!wrapper || !el) return;
   var origWidth = "", origHeight = "", origMaxWidth = "", origTransform = "", origTransformOrigin = "";
-  var origWrapperWidth = "", origWrapperHeight = "", origWrapperOverflow = "";
+  var origWrapperWidth = "", origWrapperHeight = "", origWrapperOverflow = "", origWrapperDisplay = "";
 
   window.addEventListener("beforeprint", function () {
     if (!el || !wrapper) return;
@@ -1954,10 +1954,19 @@ function initPrintFit() {
     origWrapperWidth = wrapper.style.width || "";
     origWrapperHeight = wrapper.style.height || "";
     origWrapperOverflow = wrapper.style.overflow || "";
+    origWrapperDisplay = wrapper.style.display || "";
     var scale = Math.min(1, a4Wpx / w, a4Hpx / h);
-    el.style.transformOrigin = "top left";
-    el.style.transform = "scale(" + scale + ")";
-    wrapper.style.width = Math.ceil(w * scale) + "px";
+    /* Center scaled content so left/right margins stay equal (no larger right margin) */
+    el.style.transformOrigin = "center top";
+    if (scale < 1) {
+      var tx = (a4Wpx - w * scale) / 2;
+      el.style.transform = "translateX(" + tx + "px) scale(" + scale + ")";
+    } else {
+      el.style.transform = "";
+    }
+    wrapper.style.display = "flex";
+    wrapper.style.justifyContent = "center";
+    wrapper.style.width = Math.ceil(a4Wpx) + "px";
     wrapper.style.height = Math.ceil(h * scale) + "px";
     wrapper.style.overflow = "hidden";
     wrapper.setAttribute("data-print-fit", "1");
@@ -1973,6 +1982,8 @@ function initPrintFit() {
     wrapper.style.width = origWrapperWidth;
     wrapper.style.height = origWrapperHeight;
     wrapper.style.overflow = origWrapperOverflow;
+    wrapper.style.display = origWrapperDisplay;
+    wrapper.style.justifyContent = "";
     wrapper.removeAttribute("data-print-fit");
   });
 }
