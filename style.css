@@ -461,19 +461,25 @@ td select {
   font-weight: 500;
 }
 
+/* A4-equivalent dimensions so preview matches PDF/print exactly (no distortion) */
 #document-preview-wrapper {
   display: flex;
   justify-content: center;
   overflow-x: auto;
+  width: 100%;
+  max-width: 595px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .document-a4 {
   position: relative;
-  width: 100%;
-  max-width: 800px;
+  width: 539px;   /* A4 595px - 2*28px padding = content area used by PDF */
+  max-width: 100%;
+  box-sizing: border-box;
   background: white;
   color: #111827;
-  padding: 32px 32px 40px;
+  padding: 28px 28px 36px;
   border-radius: 0.75rem;
   box-shadow: 0 22px 60px rgba(15, 23, 42, 0.8);
   overflow: hidden;
@@ -1174,6 +1180,7 @@ td select {
 
 @media (max-width: 540px) {
   .document-a4 {
+    width: 100%;
     padding: 20px 16px 24px;
   }
 
@@ -1221,8 +1228,8 @@ td select {
     box-shadow: none !important;
     border-radius: 0 !important;
     max-width: none !important;
-    width: 210mm !important;
-    padding: 32px 32px 40px !important;
+    width: 539px !important;
+    padding: 28px 28px 36px !important;
     margin: 0 auto !important;
     background: white !important;
   }
