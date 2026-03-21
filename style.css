@@ -533,16 +533,6 @@ td select {
   height: var(--doc-header-aside-h);
   min-height: var(--doc-header-aside-h);
   box-sizing: border-box;
-  /* Inner guide: shows where the logo fits (hidden on print/PDF) */
-  border: 1px dashed rgba(15, 23, 42, 0.22);
-  border-radius: 0.5rem;
-  background: transparent;
-}
-
-/* Logo fit guide off during PDF capture (html2canvas) */
-body.tpai-pdf-capture .doc-logo-box {
-  border: none;
-  background: transparent;
 }
 
 .company-logo {
@@ -1342,10 +1332,5 @@ body.tpai-pdf-capture .doc-logo-box {
     opacity: 0.03 !important;
   }
 
-  /* Logo fit guide: screen only — not on printed/PDF output */
-  .doc-logo-box {
-    border: none !important;
-    background: transparent !important;
-  }
 }
 
