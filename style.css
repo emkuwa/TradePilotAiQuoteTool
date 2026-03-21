@@ -1355,9 +1355,9 @@ td select {
     grid-template-columns: 1fr;
   }
 
-  .doc-footer {
-    flex-direction: column;
-    align-items: stretch;
+  .doc-amount-words--side-column {
+    min-height: 6.5rem;
+    height: auto;
   }
 
   .history-card {
