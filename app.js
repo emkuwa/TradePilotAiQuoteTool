@@ -2309,6 +2309,9 @@ function generatePdf(mode, filenameBase) {
     .catch(function (err) {
       cleanup();
       throw err;
+    })
+    .finally(function () {
+      cleanup();
     });
 }
 
