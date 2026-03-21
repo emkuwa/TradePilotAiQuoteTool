@@ -2169,9 +2169,10 @@ function generatePdf(mode, filenameBase) {
   const A4_H = 841.89;
   const PDF_PAD = 28;
   const innerW = A4_W - 2 * PDF_PAD;
-  const innerH = A4_H - 2 * PDF_PAD;
   const origWidth = element.style.width || "";
   const origMaxWidth = element.style.maxWidth || "";
+  const origMarginLeft = element.style.marginLeft || "";
+  const origMarginRight = element.style.marginRight || "";
   const origBoxShadow = element.style.boxShadow || "";
   const origOverflow = element.style.overflow || "";
   const origTransform = element.style.transform || "";
@@ -2236,7 +2237,6 @@ function generatePdf(mode, filenameBase) {
       scrollY: 0,
       letterRendering: true,
       logging: false,
-      windowWidth: Math.round(A4_W),
     },
     jsPDF: { unit: "pt", format: [A4_W, A4_H], orientation: "portrait", hotfixes: ["px_scaling"] },
     pagebreak: { mode: ["css", "legacy"] },
