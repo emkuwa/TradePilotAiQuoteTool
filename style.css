@@ -1292,7 +1292,18 @@ td select {
   }
 }
 
+@media (max-width: 480px) {
+  .doc-terms-bank-wrap {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
 @media (max-width: 540px) {
+  #document-preview-wrapper {
+    max-width: 100%;
+  }
+
   .document-a4 {
     padding: 20px 16px 24px;
   }
