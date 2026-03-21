@@ -760,18 +760,13 @@ td select {
   text-align: right;
 }
 
+/* Bank+Terms | Totals | Amount in words (kulia) — urefu sawa */
 .doc-totals-section {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.72fr) minmax(0, 1fr);
   gap: 10px;
   margin-top: 8px;
-  align-items: flex-start;
-}
-
-/* Amount in words: chini ya Bank + Terms na box ya jumla (safu nzima) */
-.doc-amount-words--below-terms {
-  grid-column: 1 / -1;
-  margin-top: 0;
+  align-items: stretch;
 }
 
 /* Bank + Terms: nusu / nusu (sawa sawa) */
@@ -779,17 +774,25 @@ td select {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px 12px;
-  align-items: start;
+  align-items: stretch;
+  min-height: 0;
+  height: 100%;
 }
 
 .doc-bank-column {
   min-width: 0;
   font-size: 0.62rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .doc-terms-column {
   min-width: 0;
   font-size: 0.62rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .doc-terms {
@@ -797,7 +800,8 @@ td select {
 }
 
 .doc-terms .doc-section-title,
-.doc-bank-column .doc-section-title {
+.doc-bank-column .doc-section-title,
+.doc-terms-column .doc-section-title {
   font-size: 0.68rem;
   margin-bottom: 3px;
 }
@@ -808,6 +812,7 @@ td select {
   padding: 4px 5px;
   border: 1px solid #d1d5db;
   min-height: 36px;
+  flex: 1 1 auto;
   white-space: pre-wrap;
   font-size: 0.6rem;
   line-height: 1.3;
@@ -820,6 +825,7 @@ td select {
   padding: 4px 5px;
   border: 1px solid #d1d5db;
   min-height: 24px;
+  flex: 1 1 auto;
   white-space: pre-wrap;
   font-size: 0.6rem;
   line-height: 1.3;
@@ -831,6 +837,12 @@ td select {
   border: 1px solid #d1d5db;
   padding: 7px 9px;
   background: transparent;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
 }
 
 .doc-total-row {
@@ -843,6 +855,7 @@ td select {
 .doc-total-row.grand {
   font-weight: 800;
   font-size: 0.9rem;
+  margin-bottom: 0;
 }
 
 .doc-total-row span:last-child {
@@ -851,22 +864,37 @@ td select {
 }
 
 .doc-amount-words {
-  margin-top: 4px;
-  font-size: 0.74rem;
+  margin-top: 0;
+  font-size: 0.68rem;
 }
 
-.doc-amount-words--below-terms {
-  padding-top: 2px;
+/* Sanduku refu kulia: amount in words */
+.doc-amount-words--side-column {
+  margin-top: 0;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 0.45rem;
+  padding: 7px 9px;
+  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
 }
 
 .doc-amount-words-label {
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .doc-amount-words-value {
   display: block;
-  margin-top: 2px;
+  margin-top: 4px;
   word-break: break-word;
+  flex: 1 1 auto;
+  min-height: 3rem;
+  line-height: 1.35;
 }
 
 .company-extra-list {
@@ -964,8 +992,23 @@ td select {
   padding-top: 8px;
   display: block;
   width: 100%;
+  text-align: center;
 }
 
+.doc-footer-powered-link {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: #2563eb;
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 99, 235, 0.45);
+  text-underline-offset: 2px;
+}
+
+.doc-footer-powered-link:hover {
+  color: #1d4ed8;
+}
+
+/* Legacy footer-stack (optional) */
 .footer-stack {
   display: flex;
   flex-direction: column;
