@@ -1318,16 +1318,16 @@ body.tpai-pdf-capture .doc-logo-box {
     border-radius: 0 !important;
     max-width: none !important;
     width: 210mm !important;
-    padding: 32px 32px 40px !important;
+    padding: 22px 20px 18px !important;
     margin: 0 auto !important;
     background: white !important;
   }
 
-  /* Watermark: very faint so it does not overlap or overpower text */
+  /* Watermark: visible but still behind text; semi-transparent boxes help on screen */
   .watermark img {
-    max-width: 45% !important;
-    max-height: 45% !important;
-    opacity: 0.04 !important;
+    max-width: 68% !important;
+    max-height: 68% !important;
+    opacity: 0.07 !important;
   }
 
   /* Logo fit guide: screen only — not on printed/PDF output */
