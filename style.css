@@ -530,6 +530,11 @@ td select {
   z-index: 1;
 }
 
+.document-a4 .doc-header,
+.document-a4 .doc-section {
+  flex-shrink: 0;
+}
+
 /* Header row: logo | company details | green box — logo/center height separate from green quotation box */
 .doc-header {
   --doc-header-aside-h: 128px;
