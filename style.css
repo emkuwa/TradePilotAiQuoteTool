@@ -510,7 +510,7 @@ td select {
 .doc-header {
   --doc-header-aside-h: 128px;
   --doc-meta-card-w: 100px;
-  /* Green box height (not tied to logo — restored after logo-only height change) */
+  /* Green quotation box only — height before logo was made taller (was 100px for whole row) */
   --doc-meta-card-h: 100px;
   display: flex;
   justify-content: space-between;
