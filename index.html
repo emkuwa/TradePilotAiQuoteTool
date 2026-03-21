@@ -113,115 +113,12 @@
         <!-- Create Tab -->
         <div id="create-tab" class="tab-view active">
           <p id="document-from-label" class="document-from-label" aria-hidden="true"></p>
-          <section class="panel">
-            <h2 class="panel-title" data-i18n="clientDetails">Client Details</h2>
-            <div class="field-row">
-              <div class="field-group">
-                <label for="client-name">Client Name</label>
-                <input type="text" id="client-name" placeholder="Full name">
-              </div>
-              <div class="field-group">
-                <label for="client-company">Client Company</label>
-                <input type="text" id="client-company" placeholder="Company name">
-              </div>
-            </div>
-            <div class="field-row">
-              <div class="field-group">
-                <label for="client-address">Client Address</label>
-                <textarea id="client-address" rows="2" placeholder="Address"></textarea>
-              </div>
-              <div class="field-group">
-                <label for="client-phone">Client Phone</label>
-                <input type="text" id="client-phone" placeholder="Phone number">
-              </div>
-            </div>
-          </section>
 
-          <section class="panel">
-            <h2 class="panel-title" data-i18n="items">Items</h2>
-            <div class="table-wrapper">
-              <table id="items-table">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="items-body">
-                </tbody>
-              </table>
-              <datalist id="item-suggestions"></datalist>
-            </div>
-            <div class="items-actions">
-              <button id="add-item-row" class="btn ghost small">+ Add Row</button>
-            </div>
-            <div class="common-items-panel">
-              <label class="common-items-label">Common items for this sector</label>
-              <div id="common-items-chips" class="common-items-chips"></div>
-            </div>
-
-            <div class="totals-grid">
-              <div></div>
-              <div class="totals">
-                <div class="total-row">
-                  <span>Discount (%)</span>
-                  <input id="discount-rate" type="number" min="0" max="100" step="0.1" class="discount-input" placeholder="0">
-                </div>
-                <div class="total-row">
-                  <span>Subtotal</span>
-                  <span id="subtotal-display">0.00</span>
-                </div>
-                <div class="total-row">
-                  <span>Discount</span>
-                  <span id="discount-display">0.00</span>
-                </div>
-                <div class="total-row">
-                  <span>VAT 18%</span>
-                  <span id="vat-display">0.00</span>
-                </div>
-                <div class="total-row grand">
-                  <span>Grand Total</span>
-                  <span id="grand-total-display">0.00</span>
-                </div>
-                <div class="total-row words">
-                  <span>Amount in words</span>
-                  <span id="amount-words-display"></span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="panel">
-            <h2 class="panel-title" data-i18n="termsConditions">Terms &amp; Conditions</h2>
-            <textarea id="terms" rows="3" placeholder="Add payment terms, validity period, delivery conditions and any other important notes for your documents."></textarea>
-          </section>
-
-          <section class="panel" id="letterhead-ai-panel" style="display: none;">
-            <h2 class="panel-title">Letterhead AI-style Writer</h2>
-            <div class="field-group">
-              <label for="letter-ai-prompt">Describe what this letter is about</label>
-              <textarea id="letter-ai-prompt" rows="3" placeholder="e.g. Follow-up on unpaid invoice, request for updated contract terms, or confirmation of delivery schedule..."></textarea>
-            </div>
-            <div class="field-group">
-              <label for="letter-body">Letter body</label>
-              <textarea id="letter-body" rows="10" placeholder="Your letter content will appear here. You can edit it freely after generation."></textarea>
-            </div>
-            <div class="items-actions">
-              <button id="letter-generate" class="btn primary small">Generate draft</button>
-              <button id="letter-improve" class="btn secondary small">Improve / rephrase</button>
-              <button id="letter-clear" class="btn ghost small">Clear text</button>
-            </div>
-          </section>
-
-          <!-- Document Preview -->
-          <section class="panel">
+          <!-- Document Preview (top: visible without scrolling) -->
+          <section class="panel panel-document-preview">
             <div class="panel-header-with-meta">
               <h2 class="panel-title" data-i18n="documentPreview">Document Preview</h2>
-              <span class="preview-hint">This preview is what will be exported to PDF / print.</span>
+              <span class="preview-hint">Preview here — this is what PDF / print will use.</span>
             </div>
             <div id="document-preview-wrapper">
               <div id="document-preview" class="document-a4">
@@ -364,6 +261,110 @@
                   </a>
                 </footer>
               </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="clientDetails">Client Details</h2>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="client-name">Client Name</label>
+                <input type="text" id="client-name" placeholder="Full name">
+              </div>
+              <div class="field-group">
+                <label for="client-company">Client Company</label>
+                <input type="text" id="client-company" placeholder="Company name">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="client-address">Client Address</label>
+                <textarea id="client-address" rows="2" placeholder="Address"></textarea>
+              </div>
+              <div class="field-group">
+                <label for="client-phone">Client Phone</label>
+                <input type="text" id="client-phone" placeholder="Phone number">
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="items">Items</h2>
+            <div class="table-wrapper">
+              <table id="items-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="items-body">
+                </tbody>
+              </table>
+              <datalist id="item-suggestions"></datalist>
+            </div>
+            <div class="items-actions">
+              <button id="add-item-row" class="btn ghost small">+ Add Row</button>
+            </div>
+            <div class="common-items-panel">
+              <label class="common-items-label">Common items for this sector</label>
+              <div id="common-items-chips" class="common-items-chips"></div>
+            </div>
+
+            <div class="totals-grid">
+              <div></div>
+              <div class="totals">
+                <div class="total-row">
+                  <span>Discount (%)</span>
+                  <input id="discount-rate" type="number" min="0" max="100" step="0.1" class="discount-input" placeholder="0">
+                </div>
+                <div class="total-row">
+                  <span>Subtotal</span>
+                  <span id="subtotal-display">0.00</span>
+                </div>
+                <div class="total-row">
+                  <span>Discount</span>
+                  <span id="discount-display">0.00</span>
+                </div>
+                <div class="total-row">
+                  <span>VAT 18%</span>
+                  <span id="vat-display">0.00</span>
+                </div>
+                <div class="total-row grand">
+                  <span>Grand Total</span>
+                  <span id="grand-total-display">0.00</span>
+                </div>
+                <div class="total-row words">
+                  <span>Amount in words</span>
+                  <span id="amount-words-display"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel-title" data-i18n="termsConditions">Terms &amp; Conditions</h2>
+            <textarea id="terms" rows="3" placeholder="Add payment terms, validity period, delivery conditions and any other important notes for your documents."></textarea>
+          </section>
+
+          <section class="panel" id="letterhead-ai-panel" style="display: none;">
+            <h2 class="panel-title">Letterhead AI-style Writer</h2>
+            <div class="field-group">
+              <label for="letter-ai-prompt">Describe what this letter is about</label>
+              <textarea id="letter-ai-prompt" rows="3" placeholder="e.g. Follow-up on unpaid invoice, request for updated contract terms, or confirmation of delivery schedule..."></textarea>
+            </div>
+            <div class="field-group">
+              <label for="letter-body">Letter body</label>
+              <textarea id="letter-body" rows="10" placeholder="Your letter content will appear here. You can edit it freely after generation."></textarea>
+            </div>
+            <div class="items-actions">
+              <button id="letter-generate" class="btn primary small">Generate draft</button>
+              <button id="letter-improve" class="btn secondary small">Improve / rephrase</button>
+              <button id="letter-clear" class="btn ghost small">Clear text</button>
             </div>
           </section>
         </div>
