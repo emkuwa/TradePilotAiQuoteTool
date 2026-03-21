@@ -508,7 +508,8 @@ td select {
 
 /* Header row: logo | company details | green box — same height, center text fits inside */
 .doc-header {
-  --doc-header-aside-h: 140px;
+  --doc-header-aside-h: 168px;
+  --doc-meta-card-w: 128px;
   display: flex;
   justify-content: space-between;
   align-items: stretch;
@@ -530,8 +531,9 @@ td select {
 }
 
 .company-logo {
-  width: 140px;
-  height: 140px;
+  width: auto;
+  height: auto;
+  max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
@@ -577,17 +579,17 @@ td select {
 }
 
 .doc-meta-card {
-  /* Same height as logo column; quotation content stays inside */
-  width: 160px;
-  min-width: 160px;
-  max-width: 160px;
+  /* Narrower than before; same height as logo column */
+  width: var(--doc-meta-card-w);
+  min-width: var(--doc-meta-card-w);
+  max-width: var(--doc-meta-card-w);
   height: var(--doc-header-aside-h);
   min-height: var(--doc-header-aside-h);
   max-height: var(--doc-header-aside-h);
   flex-shrink: 0;
   background: #16a34a;
-  border-radius: 0.75rem;
-  padding: 6px 8px;
+  border-radius: 0.65rem;
+  padding: 6px 6px;
   color: #ffffff;
   display: flex;
   flex-direction: column;
