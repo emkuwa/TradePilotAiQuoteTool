@@ -618,7 +618,9 @@ td select {
 }
 
 .doc-dealers-line {
-  margin-top: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
   font-size: 0.74rem;
   font-weight: 600;
   text-align: center;
@@ -980,9 +982,9 @@ td select {
 }
 
 .doc-footer {
-  border-top: 1px solid #e5e7eb;
-  margin-top: 12px;
-  padding-top: 8px;
+  border-top: none;
+  margin-top: 10px;
+  padding-top: 6px;
   display: block;
   width: 100%;
   text-align: center;
