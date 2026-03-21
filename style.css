@@ -621,9 +621,10 @@ td select {
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid #e5e7eb;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 600;
   text-align: center;
+  color: #111827;
 }
 
 .doc-type {
@@ -1193,13 +1194,6 @@ td select {
 }
 
 /* Legacy .footer-branding removed — use .footer-stack inside .doc-footer */
-
-.doc-dealers-footer {
-  margin-top: 4px;
-  font-size: 0.78rem;
-  color: #111827;
-  font-weight: 600;
-}
 
 .footer-cta-btn {
   border-radius: 999px;
