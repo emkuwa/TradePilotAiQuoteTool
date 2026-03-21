@@ -1277,5 +1277,11 @@ td select {
     max-height: 45% !important;
     opacity: 0.04 !important;
   }
+
+  /* Logo fit guide: screen only — not on printed/PDF output */
+  .doc-logo-box {
+    border: none !important;
+    background: transparent !important;
+  }
 }
 
