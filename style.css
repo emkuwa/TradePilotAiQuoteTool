@@ -473,7 +473,8 @@ td select {
   max-width: 800px;
   background: white;
   color: #111827;
-  padding: 32px 32px 40px;
+  /* Tighter padding so typical documents fit one A4 page */
+  padding: 22px 22px 20px;
   border-radius: 0.75rem;
   box-shadow: 0 22px 60px rgba(15, 23, 42, 0.8);
   overflow: hidden;
@@ -490,12 +491,12 @@ td select {
 }
 
 .watermark img {
-  max-width: 55%;
-  max-height: 55%;
+  max-width: 72%;
+  max-height: 72%;
   width: auto;
   height: auto;
   object-fit: contain;
-  opacity: 0.1;
+  opacity: 0.11;
   pointer-events: none;
 }
 
@@ -518,8 +519,8 @@ td select {
   align-items: center;
   gap: 1rem;
   border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 16px;
-  margin-bottom: 16px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .doc-logo-box {
@@ -674,13 +675,13 @@ body.tpai-pdf-capture .doc-logo-box {
 
 .doc-section-title {
   font-weight: 600;
-  font-size: 0.85rem;
-  margin-bottom: 6px;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
   color: #111827;
 }
 
 .doc-client-section {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .doc-client-grid {
@@ -721,7 +722,7 @@ body.tpai-pdf-capture .doc-logo-box {
 .doc-items-table th,
 .doc-items-table td {
   border: 1px solid #e5e7eb;
-  padding: 4px 6px;
+  padding: 3px 5px;
 }
 
 .doc-items-table thead {
@@ -751,8 +752,8 @@ body.tpai-pdf-capture .doc-logo-box {
 .doc-totals-section {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
-  gap: 16px;
-  margin-top: 12px;
+  gap: 10px;
+  margin-top: 8px;
   align-items: flex-start;
 }
 
@@ -762,11 +763,11 @@ body.tpai-pdf-capture .doc-logo-box {
 
 .doc-terms-text {
   border-radius: 0.35rem;
-  background: #f9fafb;
-  padding: 8px;
+  /* Slight transparency so watermark shows through (not fully covered by fill) */
+  background: rgba(249, 250, 251, 0.82);
+  padding: 6px 7px;
   border: 1px dashed #e5e7eb;
-  /* Make terms box in preview visually taller, matching mockup */
-  min-height: 80px;
+  min-height: 44px;
   white-space: pre-wrap;
 }
 
@@ -777,18 +778,18 @@ body.tpai-pdf-capture .doc-logo-box {
 
 .doc-bank-text {
   border-radius: 0.35rem;
-  background: #f9fafb;
-  padding: 8px;
+  background: rgba(249, 250, 251, 0.82);
+  padding: 5px 7px;
   border: 1px solid #e5e7eb;
-  min-height: 40px;
+  min-height: 28px;
   white-space: pre-wrap;
 }
 
 .doc-totals-box {
-  border-radius: 0.5rem;
+  border-radius: 0.45rem;
   border: 1px solid #bfdbfe;
-  padding: 10px 12px;
-  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  padding: 7px 9px;
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.92), rgba(255, 255, 255, 0.88));
 }
 
 .doc-total-row {
@@ -853,35 +854,96 @@ body.tpai-pdf-capture .doc-logo-box {
 .doc-signature-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 18px;
+  gap: 6px;
+  margin-top: 10px;
 }
 
-.doc-signature-block {
+/* Prepared By + Authorized Signature on one row */
+.doc-signature-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: 0.74rem;
+}
+
+.doc-signature-pair {
   flex: 1;
+  min-width: min(200px, 45%);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+}
+
+.doc-label-inline {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.doc-value-inline {
+  flex: 1;
+  min-width: 80px;
+  border-bottom: 1px solid #d1d5db;
+  min-height: 1.1rem;
   font-size: 0.78rem;
 }
 
 .doc-signature-lines-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 32px;
-  margin-top: 8px;
+  gap: 16px;
+  margin-top: 4px;
 }
 
 .signature-line {
   border-bottom: 1px solid #d1d5db;
-  height: 20px;
+  height: 14px;
 }
 
 .doc-footer {
   border-top: 1px solid #e5e7eb;
-  margin-top: 20px;
-  padding-top: 10px;
+  margin-top: 12px;
+  padding-top: 8px;
+  display: block;
+  width: 100%;
+}
+
+.footer-stack {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+}
+
+.footer-stack .footer-title {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.footer-stack .footer-text {
+  margin: 0;
+  font-size: 0.62rem;
+  line-height: 1.35;
+  color: #6b7280;
+  max-width: 100%;
+}
+
+.footer-stack .footer-cta-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.65rem;
+  white-space: normal;
+  text-align: center;
+  max-width: 100%;
 }
 
 /* Auth overlay */
@@ -1038,19 +1100,7 @@ body.tpai-pdf-capture .doc-logo-box {
   }
 }
 
-.footer-branding {
-  font-size: 0.76rem;
-  max-width: 70%;
-}
-
-.footer-title {
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.footer-text {
-  color: #4b5563;
-}
+/* Legacy .footer-branding removed — use .footer-stack inside .doc-footer */
 
 .doc-dealers-footer {
   margin-top: 4px;
@@ -1063,8 +1113,8 @@ body.tpai-pdf-capture .doc-logo-box {
   border-radius: 999px;
   background: linear-gradient(135deg, #0ea5e9, #6366f1);
   color: white;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
@@ -1210,11 +1260,7 @@ body.tpai-pdf-capture .doc-logo-box {
 
   .doc-footer {
     flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .footer-branding {
-    max-width: 100%;
+    align-items: stretch;
   }
 
   .history-card {
