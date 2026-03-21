@@ -514,7 +514,8 @@ td select {
   --doc-meta-card-h: 100px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  /* Vertically center shorter green box with logo + company name column */
+  align-items: center;
   gap: 1rem;
   border-bottom: 2px solid #e5e7eb;
   padding-bottom: 16px;
