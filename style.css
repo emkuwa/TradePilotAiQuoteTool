@@ -621,8 +621,8 @@ body.tpai-pdf-capture .doc-logo-box {
 }
 
 .doc-dealers-line {
-  margin-top: 10px;
-  font-size: 0.8rem;
+  margin-top: 4px;
+  font-size: 0.74rem;
   font-weight: 600;
   text-align: center;
 }
@@ -772,8 +772,8 @@ body.tpai-pdf-capture .doc-logo-box {
 }
 
 .doc-bank {
-  margin-top: 8px;
-  font-size: 0.78rem;
+  margin-top: 5px;
+  font-size: 0.76rem;
 }
 
 .doc-bank-text {
@@ -810,8 +810,8 @@ body.tpai-pdf-capture .doc-logo-box {
 }
 
 .doc-amount-words {
-  margin-top: 6px;
-  font-size: 0.78rem;
+  margin-top: 4px;
+  font-size: 0.74rem;
 }
 
 .doc-amount-words-label {
