@@ -531,6 +531,11 @@ td select {
   width: 140px;
   height: var(--doc-header-aside-h);
   min-height: var(--doc-header-aside-h);
+  box-sizing: border-box;
+  /* Inner guide: shows where the logo fits (hidden on print/PDF) */
+  border: 1px dashed rgba(15, 23, 42, 0.22);
+  border-radius: 0.5rem;
+  background: rgba(249, 250, 251, 0.6);
 }
 
 .company-logo {
