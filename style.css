@@ -946,11 +946,11 @@ td select {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  /* Nafasi kati ya Amount in words na Prepared By / Authorized */
-  margin-top: 1.1rem;
+  /* Nafasi zaidi kati ya Amount in words na saini */
+  margin-top: 2rem;
 }
 
-/* Prepared By | Authorized Signature: labels on top, values below; sits above dealers line */
+/* Thamani juu, lebo (Prepared By / Authorized…) chini */
 .doc-signature-row--stacked {
   display: flex;
   flex-direction: row;
@@ -966,7 +966,7 @@ td select {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 4px;
+  gap: 5px;
 }
 
 /* Mstari wa kawaida juu, kisha maandishi chini */
