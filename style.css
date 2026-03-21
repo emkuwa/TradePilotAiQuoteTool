@@ -491,12 +491,12 @@ td select {
 }
 
 .watermark img {
-  max-width: 72%;
-  max-height: 72%;
+  max-width: 58%;
+  max-height: 58%;
   width: auto;
   height: auto;
   object-fit: contain;
-  opacity: 0.11;
+  opacity: 0.035;
   pointer-events: none;
 }
 
@@ -536,7 +536,7 @@ td select {
   /* Inner guide: shows where the logo fits (hidden on print/PDF) */
   border: 1px dashed rgba(15, 23, 42, 0.22);
   border-radius: 0.5rem;
-  background: rgba(249, 250, 251, 0.6);
+  background: transparent;
 }
 
 /* Logo fit guide off during PDF capture (html2canvas) */
@@ -648,7 +648,8 @@ body.tpai-pdf-capture .doc-logo-box {
 }
 
 .doc-meta-field {
-  background: #f9fafb;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: 0.45rem;
   padding: 4px 5px;
   color: #111827;
@@ -709,7 +710,7 @@ body.tpai-pdf-capture .doc-logo-box {
   border-radius: 0.35rem;
   border: 1px solid #e5e7eb;
   padding: 8px;
-  background: #f9fafb;
+  background: transparent;
   min-height: 80px;
 }
 
@@ -719,6 +720,19 @@ body.tpai-pdf-capture .doc-logo-box {
   font-size: 0.78rem;
 }
 
+.document-a4 .doc-items-table thead tr,
+.document-a4 .doc-items-table thead th {
+  background: transparent !important;
+}
+
+.document-a4 .doc-items-table tbody tr {
+  background: transparent !important;
+}
+
+.document-a4 .doc-items-table tbody tr:hover {
+  background: transparent !important;
+}
+
 .doc-items-table th,
 .doc-items-table td {
   border: 1px solid #e5e7eb;
@@ -726,7 +740,7 @@ body.tpai-pdf-capture .doc-logo-box {
 }
 
 .doc-items-table thead {
-  background: #f9fafb;
+  background: transparent;
 }
 
 .doc-items-table th {
@@ -763,10 +777,9 @@ body.tpai-pdf-capture .doc-logo-box {
 
 .doc-terms-text {
   border-radius: 0.35rem;
-  /* Slight transparency so watermark shows through (not fully covered by fill) */
-  background: rgba(249, 250, 251, 0.82);
+  background: transparent;
   padding: 6px 7px;
-  border: 1px dashed #e5e7eb;
+  border: 1px dashed #d1d5db;
   min-height: 44px;
   white-space: pre-wrap;
 }
@@ -778,9 +791,9 @@ body.tpai-pdf-capture .doc-logo-box {
 
 .doc-bank-text {
   border-radius: 0.35rem;
-  background: rgba(249, 250, 251, 0.82);
+  background: transparent;
   padding: 5px 7px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #d1d5db;
   min-height: 28px;
   white-space: pre-wrap;
 }
@@ -789,7 +802,7 @@ body.tpai-pdf-capture .doc-logo-box {
   border-radius: 0.45rem;
   border: 1px solid #bfdbfe;
   padding: 7px 9px;
-  background: linear-gradient(135deg, rgba(239, 246, 255, 0.92), rgba(255, 255, 255, 0.88));
+  background: transparent;
 }
 
 .doc-total-row {
@@ -1323,11 +1336,10 @@ body.tpai-pdf-capture .doc-logo-box {
     background: white !important;
   }
 
-  /* Watermark: visible but still behind text; semi-transparent boxes help on screen */
   .watermark img {
-    max-width: 68% !important;
-    max-height: 68% !important;
-    opacity: 0.07 !important;
+    max-width: 55% !important;
+    max-height: 55% !important;
+    opacity: 0.03 !important;
   }
 
   /* Logo fit guide: screen only — not on printed/PDF output */
