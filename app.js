@@ -2251,6 +2251,8 @@ function generatePdf(mode, filenameBase) {
     }
     element.style.width = origWidth;
     element.style.maxWidth = origMaxWidth;
+    element.style.marginLeft = origMarginLeft;
+    element.style.marginRight = origMarginRight;
     element.style.boxShadow = origBoxShadow;
     element.style.overflow = origOverflow;
     element.style.transform = origTransform;
