@@ -461,23 +461,30 @@ td select {
   font-weight: 500;
 }
 
+/* Preview area matches A4 page width (210mm) */
 #document-preview-wrapper {
   display: flex;
   justify-content: center;
   overflow-x: auto;
+  width: 100%;
+  max-width: 210mm;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
 }
 
 .document-a4 {
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: 210mm;
+  min-height: 0;
   background: white;
   color: #111827;
-  /* Tighter padding so typical documents fit one A4 page */
   padding: 22px 22px 20px;
   border-radius: 0.75rem;
   box-shadow: 0 22px 60px rgba(15, 23, 42, 0.8);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .watermark {
@@ -761,12 +768,30 @@ td select {
   align-items: flex-start;
 }
 
+/* Bank (narrow, left) + Terms (wider, right) */
+.doc-terms-bank-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 118px) minmax(0, 1fr);
+  gap: 8px 12px;
+  align-items: start;
+}
+
+.doc-bank-column {
+  min-width: 0;
+  font-size: 0.62rem;
+}
+
+.doc-terms-column {
+  min-width: 0;
+  font-size: 0.62rem;
+}
+
 .doc-terms {
   font-size: 0.62rem;
 }
 
 .doc-terms .doc-section-title,
-.doc-bank .doc-section-title {
+.doc-bank-column .doc-section-title {
   font-size: 0.68rem;
   margin-bottom: 3px;
 }
@@ -783,11 +808,6 @@ td select {
   color: #374151;
 }
 
-.doc-bank {
-  margin-top: 4px;
-  font-size: 0.62rem;
-}
-
 .doc-bank-text {
   border-radius: 0.35rem;
   background: transparent;
@@ -802,7 +822,7 @@ td select {
 
 .doc-totals-box {
   border-radius: 0.45rem;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #d1d5db;
   padding: 7px 9px;
   background: transparent;
 }
