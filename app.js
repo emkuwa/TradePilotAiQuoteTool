@@ -2164,9 +2164,10 @@ function generatePdf(mode, filenameBase) {
     .replace(/\s+/g, "-")
     .slice(0, 24)}.pdf`;
 
-  /* Match jsPDF page exactly so the canvas is not stretched left/right */
-  const A4_W = 595.28;
-  const A4_H = 841.89;
+  /* Use jsPDF unit "px" so html2pdf's container width matches our wrapper (pt vs px mismatch
+     was making the inner box ~794px while content was ~595px → huge side gutters & squeezed look). */
+  const A4_W = 595;
+  const A4_H = 842;
   const PDF_PAD = 28;
   const innerW = A4_W - 2 * PDF_PAD;
   const origWidth = element.style.width || "";
@@ -2238,7 +2239,7 @@ function generatePdf(mode, filenameBase) {
       letterRendering: true,
       logging: false,
     },
-    jsPDF: { unit: "pt", format: [A4_W, A4_H], orientation: "portrait", hotfixes: ["px_scaling"] },
+    jsPDF: { unit: "px", format: [A4_W, A4_H], orientation: "portrait" },
     pagebreak: { mode: ["css", "legacy"] },
   };
 
