@@ -2282,6 +2282,7 @@ function generatePdf(mode, filenameBase) {
           throw err;
         });
     }
+    return Promise.resolve();
   }
 
   var imgs = element.querySelectorAll("img");
