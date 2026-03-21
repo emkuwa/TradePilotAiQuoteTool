@@ -631,13 +631,14 @@ td select {
 }
 
 .doc-dealers-line {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
   font-size: 0.78rem;
   font-weight: 600;
   text-align: center;
   color: #111827;
+  width: 100%;
 }
 
 .doc-type {
@@ -937,7 +938,8 @@ td select {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 4px;
+  /* Nafasi kati ya Amount in words na Prepared By / Authorized */
+  margin-top: 1.1rem;
 }
 
 /* Prepared By | Authorized Signature: labels on top, values below; sits above dealers line */
@@ -996,10 +998,13 @@ td select {
 }
 
 .doc-footer {
-  border-top: none;
-  margin-top: 10px;
-  padding-top: 6px;
-  display: block;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 12px;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   text-align: center;
 }
