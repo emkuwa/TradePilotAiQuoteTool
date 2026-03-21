@@ -486,9 +486,8 @@ td select {
   width: 100%;
   max-width: 210mm;
   margin-inline: auto;
-  /* Ukurasa mmoja wa A4 angalau; maudhui marefu yanaruhusu kupanda juu ya hii */
+  /* Urefu wa karatasi A4 (1:√2); si urefu wa maudhui pekee — nafasi chini inabaki */
   aspect-ratio: 210 / 297;
-  min-height: max(297mm, auto);
   height: auto;
   background: #ffffff;
   color: #111827;
