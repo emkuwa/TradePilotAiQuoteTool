@@ -2190,33 +2190,38 @@ function generatePdf(mode, filenameBase) {
   document.body.appendChild(overlay);
   document.body.classList.add("tpai-pdf-capture");
 
+  /* Full A4 content width — no uniform "fit to one page" scale (that shrinks width & leaves huge side margins).
+     html2pdf splits tall content across pages instead of squashing everything smaller. */
   var wrapper = document.createElement("div");
   wrapper.id = "pdf-page-wrapper";
   wrapper.style.cssText =
-    "width:" +
+    "position:relative;width:" +
     A4_W +
-    "px;height:" +
-    A4_H +
+    "px;max-width:" +
+    A4_W +
     "px;box-sizing:border-box;padding:" +
     PDF_PAD +
-    "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;display:flex;align-items:flex-start;justify-content:center;";
+    "px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:visible;";
   element.style.width = innerW + "px";
   element.style.maxWidth = innerW + "px";
+  element.style.marginLeft = "auto";
+  element.style.marginRight = "auto";
   element.style.boxShadow = "none";
   element.style.overflow = "visible";
+  element.style.transform = "";
+  element.style.transformOrigin = "";
   wrapper.appendChild(element);
   overlay.appendChild(wrapper);
 
   function fitElementToA4() {
-    element.style.transformOrigin = "center top";
-    element.style.transform = "";
+    /* Only shrink if content is wider than printable width (rare); never shrink because of height. */
     var w = element.scrollWidth;
-    var h = element.scrollHeight;
-    if (w <= 0 || h <= 0) return;
-    var scaleW = innerW / w;
-    var scaleH = innerH / h;
-    var scale = Math.min(1, scaleW, scaleH);
-    if (scale < 1) element.style.transform = "scale(" + scale + ")";
+    if (w <= 0) return;
+    if (w > innerW + 1) {
+      var s = innerW / w;
+      element.style.transformOrigin = "center top";
+      element.style.transform = "scale(" + s + ")";
+    }
   }
 
   var opt = {
@@ -2224,8 +2229,6 @@ function generatePdf(mode, filenameBase) {
     filename: filename,
     image: { type: "png", quality: 1 },
     html2canvas: {
-      width: A4_W,
-      height: A4_H,
       scale: 2,
       useCORS: true,
       allowTaint: true,
@@ -2233,9 +2236,10 @@ function generatePdf(mode, filenameBase) {
       scrollY: 0,
       letterRendering: true,
       logging: false,
+      windowWidth: Math.round(A4_W),
     },
     jsPDF: { unit: "pt", format: [A4_W, A4_H], orientation: "portrait", hotfixes: ["px_scaling"] },
-    pagebreak: { mode: ["avoid-all"] },
+    pagebreak: { mode: ["css", "legacy"] },
   };
 
   function cleanup() {
