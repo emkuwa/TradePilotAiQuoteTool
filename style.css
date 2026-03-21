@@ -506,13 +506,15 @@ td select {
   z-index: 1;
 }
 
-/* Header row: logo | company details | green box — same height, center text fits inside */
+/* Header row: logo | company details | green box — logo/center height separate from green quotation box */
 .doc-header {
   --doc-header-aside-h: 128px;
   --doc-meta-card-w: 100px;
+  /* Green box height (not tied to logo — restored after logo-only height change) */
+  --doc-meta-card-h: 100px;
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 1rem;
   border-bottom: 2px solid #e5e7eb;
   padding-bottom: 16px;
@@ -579,13 +581,12 @@ td select {
 }
 
 .doc-meta-card {
-  /* Narrower than before; same height as logo column */
   width: var(--doc-meta-card-w);
   min-width: var(--doc-meta-card-w);
   max-width: var(--doc-meta-card-w);
-  height: var(--doc-header-aside-h);
-  min-height: var(--doc-header-aside-h);
-  max-height: var(--doc-header-aside-h);
+  height: var(--doc-meta-card-h);
+  min-height: var(--doc-meta-card-h);
+  max-height: var(--doc-meta-card-h);
   flex-shrink: 0;
   background: #16a34a;
   border-radius: 0.65rem;
