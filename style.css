@@ -461,29 +461,43 @@ td select {
   font-weight: 500;
 }
 
-/* Preview area matches A4 page width (210mm) */
+/*
+ * Preview: karatasi A4 halisi (210×297 mm) — haifuati tu urefu wa maudhui;
+ * ukiwa na nafasi, chini bado ni ukurasa mzima (aspect ratio).
+ */
 #document-preview-wrapper {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   overflow-x: auto;
+  overflow-y: visible;
   width: 100%;
   max-width: 210mm;
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
+  background: #e8eaed;
+  padding: 14px 12px 18px;
+  border-radius: 0.65rem;
 }
 
 .document-a4 {
   position: relative;
   width: 100%;
   max-width: 210mm;
-  min-height: 0;
-  background: white;
+  margin-inline: auto;
+  /* Ukurasa mmoja wa A4 angalau; maudhui marefu yanaruhusu kupanda juu ya hii */
+  aspect-ratio: 210 / 297;
+  min-height: max(297mm, auto);
+  height: auto;
+  background: #ffffff;
   color: #111827;
   padding: 22px 22px 20px;
-  border-radius: 0.75rem;
-  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.8);
-  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid #cfd4dc;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18), 0 2px 8px rgba(15, 23, 42, 0.08);
+  overflow-x: hidden;
+  overflow-y: visible;
   box-sizing: border-box;
 }
 
