@@ -594,7 +594,8 @@ td select {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 4px;
   box-sizing: border-box;
   overflow: hidden;
 }
