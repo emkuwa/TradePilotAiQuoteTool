@@ -506,11 +506,13 @@ td select {
   z-index: 1;
 }
 
+/* Header row: logo | company details | green box — same height, center text fits inside */
 .doc-header {
+  --doc-header-aside-h: 140px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 2.5rem;
+  align-items: stretch;
+  gap: 1rem;
   border-bottom: 2px solid #e5e7eb;
   padding-bottom: 16px;
   margin-bottom: 16px;
@@ -519,76 +521,80 @@ td select {
 .doc-logo-box {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  gap: 6px;
+  width: 140px;
+  height: var(--doc-header-aside-h);
+  min-height: var(--doc-header-aside-h);
 }
 
 .company-logo {
-  /* Square-ish logo similar to screenshot */
   width: 140px;
   height: 140px;
+  max-height: 100%;
   object-fit: contain;
 }
 
-.doc-logo-brand {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #16a34a;
-  margin: 0;
-  line-height: 1.2;
-}
-
 .doc-company-text {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: var(--doc-header-aside-h);
+  max-height: var(--doc-header-aside-h);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
 .doc-company-text h1 {
-  margin: 0 0 4px;
-  font-size: 1.4rem;
+  margin: 0 0 2px;
+  font-size: 0.92rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   text-align: center;
+  line-height: 1.15;
 }
 
 .doc-company-text p {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.62rem;
+  line-height: 1.25;
   color: #4b5563;
   text-align: center;
 }
 
 .doc-company-extra {
-  margin-top: 4px;
-  font-size: 0.78rem;
+  margin-top: 2px;
+  font-size: 0.62rem;
+  line-height: 1.25;
   color: #4b5563;
   text-align: center;
 }
 
 .doc-meta-card {
-  /* Green quotation box on the right, aligned with title */
+  /* Same height as logo column; quotation content stays inside */
+  width: 160px;
   min-width: 160px;
   max-width: 160px;
-  width: 160px;
+  height: var(--doc-header-aside-h);
+  min-height: var(--doc-header-aside-h);
+  max-height: var(--doc-header-aside-h);
   flex-shrink: 0;
   background: #16a34a;
   border-radius: 0.75rem;
-  padding: 8px 10px;
+  padding: 6px 8px;
   color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  box-shadow: none;
-  min-height: 120px;
-}
-
-.doc-company-text {
-  text-align: center;
-  flex: 1;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 #terms {
