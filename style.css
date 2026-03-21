@@ -509,7 +509,7 @@ td select {
 /* Header row: logo | company details | green box — same height, center text fits inside */
 .doc-header {
   --doc-header-aside-h: 168px;
-  --doc-meta-card-w: 128px;
+  --doc-meta-card-w: 140px;
   display: flex;
   justify-content: space-between;
   align-items: stretch;
