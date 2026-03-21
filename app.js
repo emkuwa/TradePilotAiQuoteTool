@@ -2165,6 +2165,7 @@ function generatePdf(mode, filenameBase) {
   statusEl.textContent = "Generating PDF…";
   overlay.appendChild(statusEl);
   document.body.appendChild(overlay);
+  document.body.classList.add("tpai-pdf-capture");
 
   var wrapper = document.createElement("div");
   wrapper.id = "pdf-page-wrapper";
@@ -2222,6 +2223,7 @@ function generatePdf(mode, filenameBase) {
     element.style.transformOrigin = origTransformOrigin;
     if (wrapper && wrapper.parentNode) wrapper.remove();
     if (overlay && overlay.parentNode) overlay.remove();
+    document.body.classList.remove("tpai-pdf-capture");
   }
 
   function runPdf() {

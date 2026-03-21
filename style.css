@@ -538,6 +538,12 @@ td select {
   background: rgba(249, 250, 251, 0.6);
 }
 
+/* Logo fit guide off during PDF capture (html2canvas) */
+body.tpai-pdf-capture .doc-logo-box {
+  border: none;
+  background: transparent;
+}
+
 .company-logo {
   width: auto;
   height: auto;
