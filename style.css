@@ -489,6 +489,9 @@ td select {
   /* Urefu wa karatasi A4 (1:√2); si urefu wa maudhui pekee — nafasi chini inabaki */
   aspect-ratio: 210 / 297;
   height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   background: #ffffff;
   color: #111827;
   padding: 22px 22px 20px;
@@ -997,13 +1000,16 @@ td select {
   color: #111827;
 }
 
+/* Chini kabisa ya ukurasa (A4); nafasi wazi juu inasukuma footer chini */
 .doc-footer {
   border-top: 1px solid #e5e7eb;
-  margin-top: 12px;
+  margin-top: auto;
+  flex-shrink: 0;
   padding-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
   width: 100%;
   text-align: center;
