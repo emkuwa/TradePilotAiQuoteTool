@@ -1987,7 +1987,14 @@ function initActions() {
 
   if (printBtn) {
     printBtn.addEventListener("click", () => {
-      window.print();
+      try {
+        window.print();
+      } catch (e) {
+        console.error("Print failed:", e);
+        alert(
+          "Print is not available in this view. Open the app in Chrome/Edge/Safari (or use Download PDF)."
+        );
+      }
     });
   }
 
@@ -1997,45 +2004,51 @@ function initActions() {
         await generatePdf("download");
       } catch (e) {
         console.error("PDF download failed:", e);
-        alert("Could not generate PDF. Try again or use Print.");
+        alert("Could not generate PDF. Try again or use Print in a normal browser tab.");
       }
     });
   }
 
   if (saveBtn) {
     saveBtn.addEventListener("click", async () => {
-    const meta = window._tpaiGetDocMeta?.() || {};
-    const defaultName = meta.number || "document";
-    const filename = prompt(
-      "Enter filename for this document (without extension):",
-      defaultName
-    );
-    if (!filename) return;
+      const meta = window._tpaiGetDocMeta?.() || {};
+      const defaultName = meta.number || "document";
+      const filename = prompt(
+        "Enter filename for this document (without extension):",
+        defaultName
+      );
+      if (!filename) return;
 
-    await generatePdf("save", filename);
+      try {
+        await generatePdf("save", filename);
+      } catch (e) {
+        console.error("PDF save failed:", e);
+        alert("Could not generate the PDF file. History was not updated. Try Download PDF or another browser.");
+        return;
+      }
 
-    const company = getCurrentCompany();
-    const grandDisplay = document.getElementById("doc-grand-total").textContent;
-    const clientName = document.getElementById("client-name").value.trim();
+      const company = getCurrentCompany();
+      const grandDisplay = document.getElementById("doc-grand-total").textContent;
+      const clientName = document.getElementById("client-name").value.trim();
 
-    const historyEntry = {
-      id: Date.now().toString(),
-      typeLabel: meta.typeLabel,
-      typeKey: meta.typeKey,
-      number: meta.number,
-      date: meta.date,
-      clientName,
-      totalFormatted: grandDisplay,
-      filename,
-      savedAt: new Date().toISOString(),
-      currency: getDocumentCurrency(),
-      state: captureDocumentState(),
-    };
+      const historyEntry = {
+        id: Date.now().toString(),
+        typeLabel: meta.typeLabel,
+        typeKey: meta.typeKey,
+        number: meta.number,
+        date: meta.date,
+        clientName,
+        totalFormatted: grandDisplay,
+        filename,
+        savedAt: new Date().toISOString(),
+        currency: getDocumentCurrency(),
+        state: captureDocumentState(),
+      };
 
-    saveHistoryEntry(historyEntry);
-    renderHistory();
-    alert("Document saved and recorded in local history.");
-  });
+      saveHistoryEntry(historyEntry);
+      renderHistory();
+      alert("Document saved and recorded in local history.");
+    });
   }
 
   if (shareBtn) {
