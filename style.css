@@ -1409,6 +1409,7 @@ td select {
     top: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: transparent !important;
   }
 
   .document-from-label,
@@ -1420,8 +1421,10 @@ td select {
   .document-a4 {
     box-shadow: none !important;
     border-radius: 0 !important;
+    border: none !important;
     max-width: none !important;
     width: 210mm !important;
+    aspect-ratio: unset !important;
     padding: 22px 20px 18px !important;
     margin: 0 auto !important;
     background: white !important;
