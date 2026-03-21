@@ -768,10 +768,10 @@ td select {
   align-items: flex-start;
 }
 
-/* Bank (narrow, left) + Terms (wider, right) */
+/* Bank + Terms: nusu / nusu (sawa sawa) */
 .doc-terms-bank-wrap {
   display: grid;
-  grid-template-columns: minmax(0, 118px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px 12px;
   align-items: start;
 }
